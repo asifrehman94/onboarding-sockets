@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket.IO Client Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .connected { background-color: #d4edda; color: #155724; }
+        .disconnected { background-color: #f8d7da; color: #721c24; }
+        .sending { background-color: #fff3cd; color: #856404; }
+        .received { background-color: #d1ecf1; color: #0c5460; }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background-color: #0056b3; }
+        button:disabled { background-color: #6c757d; cursor: not-allowed; }
+        .event-btn { 
+            background-color: #28a745; 
+            margin: 5px; 
+            padding: 8px 12px; 
+            font-size: 14px; 
+        }
+        .event-btn:hover:not(:disabled) { background-color: #218838; }
+        .log {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 10px;
+            height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .log-entry {
+            margin: 2px 0;
+            padding: 2px 0;
+        }
+        .log-sent { color: #007bff; }
+        .log-received { color: #28a745; }
+        .log-error { color: #dc3545; }
+        .log-info { color: #6c757d; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Socket.IO Client Test</h1>
+        
+        <div id="status" class="status disconnected">
+            Disconnected
+        </div>
+        
+        <div id="connection-info" style="margin: 10px 0; padding: 10px; background-color: #f8f9fa; border-radius: 4px; font-family: monospace; display: none;">
+            <strong>Connection ID:</strong> <span id="sid">-</span>
+        </div>
+        
+        <div>
+            <button id="connectBtn" onclick="connect()">Connect</button>
+            <button id="disconnectBtn" onclick="disconnect()" disabled>Disconnect</button>
+            <button id="clearBtn" onclick="clearLog()">Clear Log</button>
+        </div>
+        
+        <h3>Test Events:</h3>
+        <div style="margin-bottom: 20px;">
+            <button class="event-btn" onclick="sendScreenEvent()" disabled>Screen Event</button>
+            <button class="event-btn" onclick="sendIntegrationEvent()" disabled>Integration</button>
+            <button class="event-btn" onclick="sendKnowledgeRepositoryEvent()" disabled>Knowledge Repository</button>
+            <button class="event-btn" onclick="sendTeammateBehaviourEvent()" disabled>Teammate Behaviour</button>
+            <button class="event-btn" onclick="sendRoleEvent()" disabled>Role</button>
+            <button class="event-btn" onclick="sendRoleTasksEvent()" disabled>Role Tasks</button>
+        </div>
+        
+        <h3>Event Log:</h3>
+        <div id="log" class="log"></div>
+    </div>
+
+    <!-- Socket.IO Client Library -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    
+    <script>
+        let socket = null;
+        let isConnected = false;
+
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function updateStatus(status, className) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = status;
+            statusDiv.className = `status ${className}`;
+        }
+
+        function updateButtons() {
+            document.getElementById('connectBtn').disabled = isConnected;
+            document.getElementById('disconnectBtn').disabled = !isConnected;
+            
+            // Enable/disable all event buttons
+            const eventButtons = document.querySelectorAll('.event-btn');
+            eventButtons.forEach(btn => btn.disabled = !isConnected);
+        }
+
+        function connect() {
+            if (socket) {
+                socket.disconnect();
+            }
+
+            log('Connecting to Socket.IO server (WebSocket only for multi-worker)...', 'info');
+            updateStatus('Connecting...', 'sending');
+
+            // Connect to Socket.IO server with custom path
+            // Allow both transports, will upgrade to WebSocket
+            socket = io('http://localhost:8000', {
+                transports: ['websocket'],
+                upgrade: false,
+                rememberUpgrade: false
+            });
+
+            // Connection event
+            socket.on('connect', () => {
+                isConnected = true;
+                updateStatus('Connected', 'connected');
+                updateButtons();
+                
+                // Show connection info and display SID
+                document.getElementById('connection-info').style.display = 'block';
+                document.getElementById('sid').textContent = socket.id;
+                
+                log('✅ Connected to server successfully!', 'info');
+                log(`🔗 Session ID: ${socket.id}`, 'info');
+            });
+
+            // Disconnection event
+            socket.on('disconnect', (reason) => {
+                isConnected = false;
+                updateStatus('Disconnected', 'disconnected');
+                updateButtons();
+                
+                // Hide connection info
+                document.getElementById('connection-info').style.display = 'none';
+                document.getElementById('sid').textContent = '-';
+                
+                log(`❌ Disconnected: ${reason}`, 'error');
+            });
+
+            // Connection error
+            socket.on('connect_error', (error) => {
+                isConnected = false;
+                updateStatus('Connection Error', 'disconnected');
+                updateButtons();
+                
+                // Hide connection info on error
+                document.getElementById('connection-info').style.display = 'none';
+                document.getElementById('sid').textContent = '-';
+                
+                log(`❌ Connection error: ${error.message}`, 'error');
+                log(`🔍 Error details: ${JSON.stringify(error)}`, 'error');
+            });
+
+            // Listen for MINDY responses
+            socket.on('mindy', (data) => {
+                log(`📨 Received MINDY response: ${JSON.stringify(data)}`, 'received');
+            });
+        }
+
+        function disconnect() {
+            if (socket) {
+                socket.disconnect();
+                socket = null;
+            }
+        }
+
+        function sendScreenEvent() {
+            if (!socket || !isConnected) {
+                log('❌ Not connected to server', 'error');
+                return;
+            }
+
+            const screenEventData = {
+                tenant_id: "ABCDE",
+                stage: "powering-up-ai",
+                step: "knowledge-repository", 
+                status: "completed",
+                message: "Hello from client!"
+            };
+            socket.emit('screen_event', screenEventData);
+        }
+
+        function sendIntegrationEvent() {
+            if (!socket || !isConnected) {
+                log('❌ Not connected to server', 'error');
+                return;
+            }
+
+            const integrationData = {
+                tenant_id: "ABCDE",
+                integration_type: "slack",
+                status: "configuring",
+                message: "Setting up Slack integration"
+            };
+
+            log(`📤 Sending INTEGRATION: ${JSON.stringify(integrationData)}`, 'sent');
+            socket.emit('integration', integrationData);
+        }
+
+        function sendKnowledgeRepositoryEvent() {
+            if (!socket || !isConnected) {
+                log('❌ Not connected to server', 'error');
+                return;
+            }
+
+            const knowledgeData = {
+                tenant_id: "ABCDE",
+                repository_type: "confluence",
+                status: "connecting",
+                message: "Connecting to knowledge repository"
+            };
+
+            log(`📤 Sending KNOWLEDGE_REPOSITORY: ${JSON.stringify(knowledgeData)}`, 'sent');
+            socket.emit('knowledge_repository', knowledgeData);
+        }
+
+        function sendTeammateBehaviourEvent() {
+            if (!socket || !isConnected) {
+                log('❌ Not connected to server', 'error');
+                return;
+            }
+
+            const behaviourData = {
+                tenant_id: "ABCDE",
+                behaviour_type: "communication_style",
+                preference: "direct",
+                status: "updated",
+                message: "Updated communication preferences"
+            };
+
+            log(`📤 Sending TEAMMATE_BEHAVIOUR: ${JSON.stringify(behaviourData)}`, 'sent');
+            socket.emit('teammate_behaviour', behaviourData);
+        }
+
+        function sendRoleEvent() {
+            if (!socket || !isConnected) {
+                log('❌ Not connected to server', 'error');
+                return;
+            }
+
+            const roleData = {
+                tenant_id: "ABCDE",
+                role: "senior_developer",
+                department: "engineering",
+                status: "assigned",
+                message: "Role assignment completed"
+            };
+
+            log(`📤 Sending ROLE: ${JSON.stringify(roleData)}`, 'sent');
+            socket.emit('role', roleData);
+        }
+
+        function sendRoleTasksEvent() {
+            if (!socket || !isConnected) {
+                log('❌ Not connected to server', 'error');
+                return;
+            }
+
+            const roleTasksData = {
+                tenant_id: "ABCDE",
+                role: "senior_developer",
+                tasks: ["code_review", "mentoring", "architecture_design"],
+                status: "configured",
+                message: "Role tasks configured"
+            };
+
+            log(`📤 Sending ROLE_TASKS: ${JSON.stringify(roleTasksData)}`, 'sent');
+            socket.emit('role_tasks', roleTasksData);
+        }
+
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+
+        // Initialize buttons
+        updateButtons();
+
+        // Auto-connect on page load
+        window.addEventListener('load', () => {
+            log('🚀 Socket.IO Client loaded. Click Connect to start.', 'info');
+        });
+    </script>
+</body>
+</html>

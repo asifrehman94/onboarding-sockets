@@ -1,0 +1,17 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+# Ignore all target folders
+**/target/
+
+**/logs/
+
+**/test_data/
+
+nifi/data/
+
+venv/
+
+.ipynb_checkpoints
+.env
+ALEMBIC_COMMANDS.MD

@@ -1,0 +1,36 @@
+# FastAPI and ASGI
+fastapi==0.115.0
+uvicorn[standard]==0.32.0
+python-multipart==0.0.6
+
+# Socket.IO with async support and Redis manager
+python-socketio
+
+# Database with async support
+sqlalchemy[asyncio]==2.0.23
+asyncpg==0.29.0
+alembic==1.12.1
+psycopg2-binary==2.9.10
+
+# Redis with async support
+redis[hiredis]==5.0.1
+aioredis==2.0.1
+
+# Pydantic and settings
+pydantic==2.10.0
+pydantic-settings==2.7.0
+
+# Utilities
+python-dotenv==1.0.0
+python-json-logger==2.0.7
+aiofiles==23.2.1
+
+# Additional async libraries
+aiohttp==3.9.1
+
+# Development
+pytest==7.4.3
+pytest-asyncio==0.21.1
+black==23.11.0
+isort==5.12.0
+mypy==1.7.1

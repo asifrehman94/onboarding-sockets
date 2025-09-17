@@ -1,0 +1,8 @@
+[
+  {
+    "stage": "onboarding",
+    "step": "welcome",
+    "status": "completed",
+    "text": "Welcome to <tenant_id>, <username> 👋\nLet's get your security workspace up and running — personalized to how you work.\n\nThis won't take long. We'll help you connect tools, configure alerts, and automate your daily tasks."
+  }
+]
