@@ -75,14 +75,12 @@ class OnboardingContentRepository(BaseRepository[OnboardingContent]):
             Created OnboardingContent
         """
         try:
-            content = OnboardingContent(
+            return await self.create(
                 stage=stage,
                 step=step,
                 status=status,
                 text=text
             )
-            
-            return await self.create(content)
             
         except Exception as e:
             logger.error(f"Error creating content for stage='{stage}', step='{step}', status='{status}': {e}")

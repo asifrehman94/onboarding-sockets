@@ -16,6 +16,7 @@ services:
       - ./app:/app/app
       - ./logs:/app/logs
       - ./alembic:/app/alembic
+      - ./scripts:/app/scripts
     networks:
       - app-network
     restart: unless-stopped

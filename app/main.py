@@ -65,6 +65,9 @@ socketio_server = create_simple_server(
     engineio_logger=settings.socketio_engineio_logger
 )
 
+# Global access to Socket.IO instance
+sio = socketio_server.socketio_server
+
 
 app = FastAPI(
     title=settings.app_name,
@@ -95,7 +98,7 @@ async def health_check():
 def get_app():
     """Get the ASGI application with Socket.IO integration"""
     import socketio
-    return socketio.ASGIApp(socketio_server.socketio_server, app)
+    return socketio.ASGIApp(sio, app)
 
 
 if __name__ == "__main__":

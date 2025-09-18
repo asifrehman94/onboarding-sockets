@@ -4,11 +4,12 @@ Onboarding Content Model
 from sqlalchemy import Column, String, Text, DateTime, UniqueConstraint
 from sqlalchemy.sql import func
 from app.models.base import Base
+import uuid
 
 
 class OnboardingContent(Base):
     __tablename__ = "onboarding_content"
-    id = Column(String, primary_key=True, default=lambda: str(func.gen_random_uuid()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     stage = Column(String(100), nullable=False, index=True)
     step = Column(String(100), nullable=False, index=True)
     status = Column(String(50), nullable=False, index=True)

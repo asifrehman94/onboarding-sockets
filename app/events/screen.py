@@ -29,52 +29,42 @@ async def handle_screen_event(sio, sid: str, data: Dict[str, Any] = None):
         stage = data.get('stage')
         step = data.get('step')
         status = data.get('status')
-
-        response_data = {
-            "tenant_id": tenant_id,
-            "timestamp": datetime.utcnow().isoformat() + "Z",
-            "stage": stage,
-            "step": step,
-            "status": status
-        }
         
-        await sio.emit(Events.MINDY, response_data, to=sid)
+        if not all([tenant_id, stage, step, status]):
+            await sio.emit(Events.MINDY, {
+                "error": "Missing required fields: tenant_id, stage, step, status",
+                "timestamp": datetime.utcnow().isoformat() + "Z"
+            }, to=sid)
+            return
         
-        # if not all([tenant_id, stage, step, status]):
-        #     await sio.emit(Events.MINDY, {
-        #         "error": "Missing required fields: tenant_id, stage, step, status",
-        #         "timestamp": datetime.utcnow().isoformat() + "Z"
-        #     }, to=sid)
-        #     return
-        
-        # async with AsyncSessionLocal() as session:
-        #     repository = OnboardingContentRepository(session)
-        #     content = await repository.get_by_stage_step_status(stage, step, status)
+        async with AsyncSessionLocal() as session:
+            repository = OnboardingContentRepository(session)
+            content = await repository.get_by_stage_step_status(stage, step, status)
             
-        #     if content:
-        #         text = content.text
+            if content:
+                text = content.text
                 
-        #         # Replace placeholders
-        #         if '<tenant_id>' in text:
-        #             text = text.replace('<tenant_id>', tenant_id)
-        #         if '<username>' in text:
-        #             username = data.get('username', 'User')
-        #             text = text.replace('<username>', username)
+                # Replace placeholders
+                if '<tenant_id>' in text:
+                    text = text.replace('<tenant_id>', tenant_id)
+                if '<username>' in text:
+                    username = data.get('username', 'User')
+                    text = text.replace('<username>', username)
                 
-        #         response_data = {
-        #             "text": text,
-        #             "timestamp": datetime.utcnow().isoformat() + "Z",
-        #             "stage": stage,
-        #             "step": step,
-        #             "status": status
-        #         }
+                response_data = {
+                    "text": text,
+                    "timestamp": datetime.utcnow().isoformat() + "Z",
+                    "stage": stage,
+                    "step": step,
+                    "status": status
+                }
                 
-        #         await sio.emit(Events.MINDY, response_data, to=sid)
-        #     else:
-        #         await sio.emit(Events.MINDY, {
-        #             "warning": f"No content found for stage='{stage}', step='{step}', status='{status}'",
-        #             "timestamp": datetime.utcnow().isoformat() + "Z"
-        #         }, to=sid)
+                await sio.emit(Events.MINDY, response_data, to=sid)
+            else:
+                await sio.emit(Events.MINDY, {
+                    "warning": f"No content found for stage='{stage}', step='{step}', status='{status}'",
+                    "timestamp": datetime.utcnow().isoformat() + "Z"
+                }, to=sid)
                 
     except Exception as e:
         logger.error(f"Error processing screen event: {e}")
