@@ -1,0 +1,36 @@
+services:
+  # Event Handlers
+  connection_handler:
+    class: src.app.events.handlers.connection_handler.ConnectionHandler
+
+  screen_event_handler:
+    class: src.app.events.handlers.screen_event_handler.ScreenEventHandler
+    kwargs:
+      onboarding_repository: '@onboarding_content_repository'
+
+  integration_handler:
+    class: src.app.events.handlers.integration_handler.IntegrationHandler
+
+  knowledge_repository_handler:
+    class: src.app.events.handlers.knowledge_repository_handler.KnowledgeRepositoryHandler
+
+  teammate_behaviour_handler:
+    class: src.app.events.handlers.teammate_behaviour_handler.TeammateBehaviourHandler
+
+  role_handler:
+    class: src.app.events.handlers.role_handler.RoleHandler
+
+  role_tasks_handler:
+    class: src.app.events.handlers.role_tasks_handler.RoleTasksHandler
+
+  # Event Registry
+  event_registry:
+    class: src.app.events.event_registry.EventRegistry
+    kwargs:
+      connection_handler: '@connection_handler'
+      screen_event_handler: '@screen_event_handler'
+      integration_handler: '@integration_handler'
+      knowledge_repository_handler: '@knowledge_repository_handler'
+      teammate_behaviour_handler: '@teammate_behaviour_handler'
+      role_handler: '@role_handler'
+      role_tasks_handler: '@role_tasks_handler'

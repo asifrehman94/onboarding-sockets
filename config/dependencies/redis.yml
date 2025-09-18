@@ -1,0 +1,5 @@
+services:
+  redis_manager:
+    class: src.infra.redis.services.redis_manager.RedisManager
+    kwargs:
+      redis_url: '@REDIS_URL'

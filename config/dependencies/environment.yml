@@ -1,0 +1,28 @@
+parameters:
+  # Application
+  APP_NAME: $APP_NAME
+  APP_VERSION: $APP_VERSION
+  ENVIRONMENT: $ENVIRONMENT
+  DEBUG: $DEBUG
+
+  # Server Configuration
+  HOST: $HOST
+  PORT: $PORT
+  WORKERS: $WORKERS
+
+  # Database Configuration
+  DATABASE_URL: $DATABASE_URL
+
+  # Redis Configuration
+  REDIS_URL: $REDIS_URL
+
+  # Socket.IO Configuration
+  SOCKETIO_LOGGER: $SOCKETIO_LOGGER
+  SOCKETIO_ENGINEIO_LOGGER: $SOCKETIO_ENGINEIO_LOGGER
+
+  # Logging Configuration
+  LOG_LEVEL: $LOG_LEVEL
+  LOG_FORMAT: $LOG_FORMAT
+
+  # Security
+  SECRET_KEY: $SECRET_KEY
