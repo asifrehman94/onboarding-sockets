@@ -3,7 +3,6 @@ FastAPI Application with Socket.IO Support
 Production-ready blueprint with multi-worker architecture
 """
 import logging
-import socketio
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -11,8 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.database import init_database, close_database
 from app.core.redis import redis_manager
-from app.socketio.server import socketio_server
-from app.socketio.event_handlers import SocketIOEventHandlers
+from py_socketio import create_simple_server
 
 logging.basicConfig(
     level=getattr(logging, settings.log_level.upper()),
@@ -52,8 +50,20 @@ async def lifespan(app: FastAPI):
         logger.error(f"Error during shutdown: {e}")
 
 
-sio = socketio_server.create_server()
-event_handlers = SocketIOEventHandlers(sio)
+# Create Socket.IO server using the wrapper
+from app.events import EventRegistry
+
+socketio_server = create_simple_server(
+    listeners=[EventRegistry()],
+    host=settings.host,
+    port=settings.port,
+    workers=settings.workers,
+    redis_url=settings.redis_url,
+    cors_allowed_origins="*",
+    transports=[settings.socketio_transports_mode],
+    logger=settings.socketio_logger,
+    engineio_logger=settings.socketio_engineio_logger
+)
 
 
 app = FastAPI(
@@ -83,8 +93,9 @@ async def health_check():
     }
 
 def get_app():
-    """Get the ASGI application"""
-    return socketio.ASGIApp(sio, app)
+    """Get the ASGI application with Socket.IO integration"""
+    import socketio
+    return socketio.ASGIApp(socketio_server.socketio_server, app)
 
 
 if __name__ == "__main__":

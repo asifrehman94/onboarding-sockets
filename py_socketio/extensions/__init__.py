@@ -1,0 +1,1 @@
+from py_socketio.extensions.channel_manager import SocketIOChannelManager
