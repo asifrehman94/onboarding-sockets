@@ -9,11 +9,12 @@ class Events(StrEnum):
     
     CONNECT = "connect"
     DISCONNECT = "disconnect"
-    SCREEN_EVENT = "screen-event"
+    SCREEN_EVENT = "screen"
     MINDY = "mindy"
     INTEGRATION = "integration"
     KNOWLEDGE_REPOSITORY = "knowledge-repository"
     TEAMMATE_BEHAVIOUR = "teammate-behaviour"
     ROLE = "role"
     ROLE_TASKS = "role-tasks"
+    JOURNEY_TRANSITION = "journey-transition"
     ERRORS = "errors"

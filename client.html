@@ -139,7 +139,7 @@
 
             // Connect to Socket.IO server with custom path
             // Allow both transports, will upgrade to WebSocket
-            socket = io('http://localhost:8000', {
+            socket = io('https://marya-chemoreceptive-susan.ngrok-free.app/', {
                 transports: ['websocket'],
                 upgrade: false,
                 rememberUpgrade: false
@@ -207,12 +207,11 @@
 
             const screenEventData = {
                 tenant_id: "ABCDE",
-                stage: "powering-up-ai",
-                step: "knowledge-repository", 
+                stage: "onboarding",
+                step: "welcome", 
                 status: "completed",
-                message: "Hello from client!"
             };
-            socket.emit('screen_event', screenEventData);
+            socket.emit('screen', screenEventData);
         }
 
         function sendIntegrationEvent() {
@@ -255,16 +254,33 @@
                 return;
             }
 
+            // const behaviourData = {
+            //     tenant_id: "ABCDE",
+            //     method : "POST",
+            //     payload: {
+            //         message : "Updated communication preferences"
+            //     }
+            // };
             const behaviourData = {
                 tenant_id: "ABCDE",
-                behaviour_type: "communication_style",
-                preference: "direct",
-                status: "updated",
-                message: "Updated communication preferences"
+                method : "GET",
+                payload: {
+                    id : "d644cae6-d12f-4b37-a4a1-42ec7a8043ce"
+                }
             };
+            // const behaviourData = {
+            //     tenant_id: "ABCDE",
+            //     method : "DELETE",
+            //     payload: {
+            //         id : "d644cae6-d12f-4b37-a4a1-42ec7a8043ce"
+            //     }
+            // };
 
             log(`📤 Sending TEAMMATE_BEHAVIOUR: ${JSON.stringify(behaviourData)}`, 'sent');
-            socket.emit('teammate_behaviour', behaviourData);
+            socket.emit('teammate-behaviour', behaviourData , (response) => {
+                    
+                    console.log('Server response:', response);
+                    });
         }
 
         function sendRoleEvent() {

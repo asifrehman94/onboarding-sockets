@@ -108,7 +108,15 @@ class OnboardingContentRepository(BaseRepository[OnboardingContent]):
         """
         async with self.session_factory() as session:
             try:
-                content = await self.get_by_stage_step_status(stage, step, status)
+                # Query within the same session to avoid event loop conflicts
+                stmt = select(OnboardingContent).where(
+                    OnboardingContent.stage == stage,
+                    OnboardingContent.step == step,
+                    OnboardingContent.status == status
+                )
+                
+                result = await session.execute(stmt)
+                content = result.scalar_one_or_none()
                 
                 if content:
                     content.text = new_text

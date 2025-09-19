@@ -13,17 +13,9 @@ class KnowledgeRepositoryHandler:
     """Handler for knowledge repository events"""
     
     def __init__(self):
-        pass
+        self.sio = None  # Will be injected by EventRegistry
     
-    async def handle_knowledge_repository(self, sio, sid: str, data: Dict[str, Any] = None):
+    async def handle_knowledge_repository(self, sid: str, data: Dict[str, Any] = None):
         """Handle knowledge repository events"""
-        logger.info(f"Knowledge repository event from {sid}: {data}")
-        
-        response_data = {
-            "text": "Knowledge repository process initiated",
-            "timestamp": datetime.utcnow().isoformat() + "Z",
-            "event_type": "knowledge_repository",
-            "status": "processing"
-        }
-        
-        await sio.emit(Events.MINDY, response_data, to=sid)
+        logger.info(f"*********************Knowledge repository event from {sid}: {data}*********************")
+        pass

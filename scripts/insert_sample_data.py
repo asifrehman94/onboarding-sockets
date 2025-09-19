@@ -1,17 +1,21 @@
 #!/usr/bin/env python3
 """
 Insert onboarding content data from JSON file
+Updated for new IoC structure
 """
 import asyncio
 import sys
 import os
 import json
+from dotenv import load_dotenv
 
 # Add the project root to the Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from app.core.database import AsyncSessionLocal
-from app.repositories.onboarding_content_repository import OnboardingContentRepository
+# Load environment variables
+load_dotenv()
+
+from py_ioc import Container
 
 
 def load_data_from_json(filename="onboarding_content.json"):
@@ -41,55 +45,65 @@ async def insert_data_from_json(filename="onboarding_content.json"):
     if not data:
         return
     
-    async with AsyncSessionLocal() as session:
-        repository = OnboardingContentRepository(session)
-        
-        print(f"🚀 Inserting onboarding content data from {filename}...")
-        
-        created_count = 0
-        skipped_count = 0
-        error_count = 0
-        
-        for item in data:
-            try:
-                # Validate required fields
-                required_fields = ["stage", "step", "status", "text"]
-                missing_fields = [field for field in required_fields if field not in item or not item[field]]
-                
-                if missing_fields:
-                    print(f"❌ Missing required fields {missing_fields} in item: {item}")
-                    error_count += 1
-                    continue
-                
-                # Check if content already exists
-                existing = await repository.get_by_stage_step_status(
-                    item["stage"], 
-                    item["step"], 
-                    item["status"]
-                )
-                
-                if existing:
-                    print(f"⚠️  Content already exists for stage='{item['stage']}', step='{item['step']}', status='{item['status']}'")
-                    skipped_count += 1
-                    continue
-                
-                # Create new content
-                content = await repository.create_content(
-                    stage=item["stage"],
-                    step=item["step"],
-                    status=item["status"],
-                    text=item["text"]
-                )
-                
-                print(f"✅ Created content: stage='{content.stage}', step='{content.step}', status='{content.status}'")
-                created_count += 1
-                
-            except Exception as e:
-                print(f"❌ Error creating content for stage='{item.get('stage', 'unknown')}', step='{item.get('step', 'unknown')}', status='{item.get('status', 'unknown')}': {e}")
+    # Initialize IoC container
+    directory = "config/dependencies"
+    container = Container(
+        files=[
+            f"{directory}/environment.yml",
+            f"{directory}/database.yml",
+            f"{directory}/repositories.yml",
+        ]
+    )
+    
+    # Get repository from IoC container
+    repository = container.get("onboarding_content_repository")
+    
+    print(f"🚀 Inserting onboarding content data from {filename}...")
+    
+    created_count = 0
+    skipped_count = 0
+    error_count = 0
+    
+    for item in data:
+        try:
+            # Validate required fields
+            required_fields = ["stage", "step", "status", "text"]
+            missing_fields = [field for field in required_fields if field not in item or not item[field]]
+            
+            if missing_fields:
+                print(f"❌ Missing required fields {missing_fields} in item: {item}")
                 error_count += 1
-        
-        print(f"\n🎉 Data insertion completed!")
-        print(f"📊 Summary: {created_count} created, {skipped_count} skipped, {error_count} errors")
+                continue
+            
+            # Check if content already exists
+            existing = await repository.get_by_stage_step_status(
+                item["stage"], 
+                item["step"], 
+                item["status"]
+            )
+            
+            if existing:
+                print(f"⚠️  Content already exists for stage='{item['stage']}', step='{item['step']}', status='{item['status']}'")
+                skipped_count += 1
+                continue
+            
+            # Create new content
+            content = await repository.create_content(
+                stage=item["stage"],
+                step=item["step"],
+                status=item["status"],
+                text=item["text"]
+            )
+            
+            print(f"✅ Created content: stage='{content.stage}', step='{content.step}', status='{content.status}'")
+            created_count += 1
+            
+        except Exception as e:
+            print(f"❌ Error creating content for stage='{item.get('stage', 'unknown')}', step='{item.get('step', 'unknown')}', status='{item.get('status', 'unknown')}': {e}")
+            error_count += 1
+    
+    print(f"\n🎉 Data insertion completed!")
+    print(f"📊 Summary: {created_count} created, {skipped_count} skipped, {error_count} errors")
 
 
 def main():

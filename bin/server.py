@@ -25,8 +25,8 @@ class Main:
             files=[
                 f"{directory}/environment.yml",
                 f"{directory}/database.yml",
-                f"{directory}/redis.yml",
                 f"{directory}/repositories.yml",
+                f"{directory}/redis.yml",
                 f"{directory}/event_handlers.yml",
                 f"{directory}/socketio.yml",
                 f"{directory}/server.yml",

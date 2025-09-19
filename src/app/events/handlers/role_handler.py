@@ -13,11 +13,12 @@ class RoleHandler:
     """Handler for role events"""
     
     def __init__(self):
-        pass
+        self.sio = None  # Will be injected by EventRegistry
     
-    async def handle_role(self, sio, sid: str, data: Dict[str, Any] = None):
+    async def handle_role(self, sid: str, data: Dict[str, Any] = None):
         """Handle role events"""
         logger.info(f"Role event from {sid}: {data}")
+        #todo
         
         response_data = {
             "text": "Role process initiated",
@@ -26,4 +27,4 @@ class RoleHandler:
             "status": "processing"
         }
         
-        await sio.emit(Events.MINDY, response_data, to=sid)
+        await self.sio.emit(Events.MINDY, response_data, to=sid)

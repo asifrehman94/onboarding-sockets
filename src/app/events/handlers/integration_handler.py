@@ -13,9 +13,10 @@ class IntegrationHandler:
     """Handler for integration events"""
     
     def __init__(self):
-        pass
+        self.sio = None
     
-    async def handle_integration(self, sio, sid: str, data: Dict[str, Any] = None):
+    async def handle_integration(self, sid: str, data: Dict[str, Any] = None):
+        #todo
         """Handle integration events"""
         logger.info(f"Integration event from {sid}: {data}")
         
@@ -26,4 +27,4 @@ class IntegrationHandler:
             "status": "processing"
         }
         
-        await sio.emit(Events.MINDY, response_data, to=sid)
+        await self.sio.emit(Events.MINDY, response_data, to=sid)

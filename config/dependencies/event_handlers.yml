@@ -16,6 +16,8 @@ services:
 
   teammate_behaviour_handler:
     class: src.app.events.handlers.teammate_behaviour_handler.TeammateBehaviourHandler
+    kwargs:
+      teammate_behaviour_repository: '@teammate_behaviour_repository'
 
   role_handler:
     class: src.app.events.handlers.role_handler.RoleHandler

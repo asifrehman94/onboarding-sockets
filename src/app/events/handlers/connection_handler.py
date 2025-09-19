@@ -14,8 +14,8 @@ class ConnectionHandler:
     
     async def handle_connect(self, sid: str, environ: dict = None, auth: dict = None):
         """Handle client connection"""
-        logger.info(f"=================Client {sid} connected=================")
+        logger.info(f"*********************Client {sid} connected*********************")
     
     async def handle_disconnect(self, sid: str):
         """Handle client disconnection"""
-        logger.info(f"=================Client {sid} disconnected=================")
+        logger.info(f"*********************Client {sid} disconnected*********************")

@@ -15,16 +15,13 @@ class ScreenEventHandler:
     
     def __init__(self, onboarding_repository: OnboardingContentRepository):
         self.onboarding_repository = onboarding_repository
+        self.sio = None
     
-    async def handle_screen_event(self, sio, sid: str, data: Dict[str, Any] = None):
+    async def handle_screen_event(self, sid: str, data: Dict[str, Any] = None):
         """Process screen events and fetch onboarding content"""
         logger.info(f"Screen event from {sid}: {data}")
-        
+        #todo
         if not data:
-            await sio.emit(Events.MINDY, {
-                "error": "No data provided",
-                "timestamp": datetime.utcnow().isoformat() + "Z"
-            }, to=sid)
             return
         
         try:
@@ -34,7 +31,7 @@ class ScreenEventHandler:
             status = data.get('status')
             
             if not all([tenant_id, stage, step, status]):
-                await sio.emit(Events.MINDY, {
+                await self.sio.emit(Events.ERRORS, {
                     "error": "Missing required fields: tenant_id, stage, step, status",
                     "timestamp": datetime.utcnow().isoformat() + "Z"
                 }, to=sid)
@@ -44,12 +41,11 @@ class ScreenEventHandler:
             
             if content:
                 text = content.text
-                
-                # Replace placeholders
+
                 if '<tenant_id>' in text:
                     text = text.replace('<tenant_id>', tenant_id)
                 if '<username>' in text:
-                    username = data.get('username', 'User')
+                    username = data.get('username', '')
                     text = text.replace('<username>', username)
                 
                 response_data = {
@@ -60,16 +56,16 @@ class ScreenEventHandler:
                     "status": status
                 }
                 
-                await sio.emit(Events.MINDY, response_data, to=sid)
+                await self.sio.emit(Events.MINDY, response_data, to=sid)
             else:
-                await sio.emit(Events.MINDY, {
+                await self.sio.emit(Events.ERRORS, {
                     "warning": f"No content found for stage='{stage}', step='{step}', status='{status}'",
                     "timestamp": datetime.utcnow().isoformat() + "Z"
                 }, to=sid)
                 
         except Exception as e:
             logger.error(f"Error processing screen event: {e}")
-            await sio.emit(Events.MINDY, {
+            await self.sio.emit(Events.ERRORS, {
                 "error": "Internal server error",
                 "timestamp": datetime.utcnow().isoformat() + "Z"
             }, to=sid)
