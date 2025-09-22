@@ -33,6 +33,8 @@ services:
 
   journey_transition_handler:
     class: src.app.events.handlers.journey_transition_handler.JourneyTransitionHandler
+    kwargs:
+      onboarding_status_repository: '@onboarding_status_repository'
 
   # Event Registry
   event_registry:

@@ -179,52 +179,6 @@ class OnboardingStatusRepository(BaseRepository[OnboardingStatus]):
             logger.error(f"Error incrementing status for tenant '{tenant_id}': {e}")
             raise
     
-    async def get_all_by_status(self, status: int) -> List[OnboardingStatus]:
-        """
-        Get all onboarding statuses with a specific status value
-        
-        Args:
-            status: The status value to filter by
-            
-        Returns:
-            List of OnboardingStatus with the specified status
-        """
-        async with self.session_factory() as session:
-            try:
-                stmt = select(OnboardingStatus).where(OnboardingStatus.status == status)
-                result = await session.execute(stmt)
-                statuses = result.scalars().all()
-                
-                logger.info(f"Found {len(statuses)} onboarding statuses with status={status}")
-                return statuses
-                
-            except Exception as e:
-                logger.error(f"Error fetching onboarding statuses with status {status}: {e}")
-                raise
-    
-    async def get_all_by_stage(self, stage: str) -> List[OnboardingStatus]:
-        """
-        Get all onboarding statuses in a specific stage
-        
-        Args:
-            stage: The stage to filter by
-            
-        Returns:
-            List of OnboardingStatus in the specified stage
-        """
-        async with self.session_factory() as session:
-            try:
-                stmt = select(OnboardingStatus).where(OnboardingStatus.current_stage == stage)
-                result = await session.execute(stmt)
-                statuses = result.scalars().all()
-                
-                logger.info(f"Found {len(statuses)} onboarding statuses in stage '{stage}'")
-                return statuses
-                
-            except Exception as e:
-                logger.error(f"Error fetching onboarding statuses in stage '{stage}': {e}")
-                raise
-    
     async def delete_by_tenant_id(self, tenant_id: str) -> bool:
         """
         Delete onboarding status by tenant ID
