@@ -92,6 +92,7 @@
             <button class="event-btn" onclick="sendTeammateBehaviourEvent()" disabled>Teammate Behaviour</button>
             <button class="event-btn" onclick="sendRoleEvent()" disabled>Role</button>
             <button class="event-btn" onclick="sendRoleTasksEvent()" disabled>Role Tasks</button>
+            <button class="event-btn" onclick="sendJourneyEvent()" disabled>Journey</button>
         </div>
         
         <h3>Event Log:</h3>
@@ -139,7 +140,9 @@
 
             // Connect to Socket.IO server with custom path
             // Allow both transports, will upgrade to WebSocket
-            socket = io('https://marya-chemoreceptive-susan.ngrok-free.app/', {
+            url = "http://localhost:8000/"
+            // url = "https://marya-chemoreceptive-susan.ngrok-free.app"
+            socket = io(url, {
                 transports: ['websocket'],
                 upgrade: false,
                 rememberUpgrade: false
@@ -290,14 +293,19 @@
             }
 
             const roleData = {
-                tenant_id: "ABCDE",
-                role: "senior_developer",
-                department: "engineering",
-                status: "assigned",
-                message: "Role assignment completed"
+                tenant_id: "ASIFCORP",
+                method : "GET",
+                payload: null
             };
 
-            log(`📤 Sending ROLE: ${JSON.stringify(roleData)}`, 'sent');
+            // const roleData = {
+            //     tenant_id: "ASIFCORP",
+            //     method : "POST",
+            //     payload: {
+            //         role_id : "ac561a8e-123c-4dc9-9070-2b523a4c7528"
+            //     }
+            // };
+
             socket.emit('role', roleData);
         }
 
@@ -307,16 +315,50 @@
                 return;
             }
 
-            const roleTasksData = {
-                tenant_id: "ABCDE",
-                role: "senior_developer",
-                tasks: ["code_review", "mentoring", "architecture_design"],
-                status: "configured",
-                message: "Role tasks configured"
+            // const roleTasksData = {
+            //     tenant_id: "ABCDE",
+            //     role: "senior_developer",
+            //     tasks: ["code_review", "mentoring", "architecture_design"],
+            //     status: "configured",
+            //     message: "Role tasks configured"
+            // };
+
+             const roleTasksData = {
+                tenant_id: "ASIFCORP",
+                method : "POST",
+                payload: [
+                    {
+                    task_id : "9f96473d-2355-4e93-ad96-4a5a07409757"
+                    },
+                    {
+                    task_id : "157aaa5a-68a6-40fb-a15b-a13656166713"
+                    },
+                    {
+                    task_id : "4b6cb932-6f18-4164-96dc-bf91856982e5"
+                    }
+            ]
             };
 
             log(`📤 Sending ROLE_TASKS: ${JSON.stringify(roleTasksData)}`, 'sent');
-            socket.emit('role_tasks', roleTasksData);
+            socket.emit('role-tasks', roleTasksData);
+        }
+
+        function sendJourneyEvent() {
+            if (!socket || !isConnected) {
+                log('❌ Not connected to server', 'error');
+                return;
+            }
+
+            const journeyData = {
+                tenant_id: "ASIFCORP",
+                stage: "powering-up-ai",
+                step: "communication-workspace",
+                status: 1
+            };
+
+            log(`📤 Sending ROLE_TASKS: ${JSON.stringify(journeyData)}`, 'sent');
+
+            socket.emit('journey-transition', journeyData);
         }
 
         function clearLog() {

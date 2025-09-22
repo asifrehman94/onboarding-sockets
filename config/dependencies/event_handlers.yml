@@ -21,9 +21,18 @@ services:
 
   role_handler:
     class: src.app.events.handlers.role_handler.RoleHandler
+    kwargs:
+      role_repository: '@role_repository'
+      tenant_role_repository: '@tenant_role_repository'
 
   role_tasks_handler:
     class: src.app.events.handlers.role_tasks_handler.RoleTasksHandler
+    kwargs:
+      role_tasks_repository: '@role_tasks_repository'
+      tenant_tasks_repository: '@tenant_tasks_repository'
+
+  journey_transition_handler:
+    class: src.app.events.handlers.journey_transition_handler.JourneyTransitionHandler
 
   # Event Registry
   event_registry:
@@ -36,3 +45,4 @@ services:
       teammate_behaviour_handler: '@teammate_behaviour_handler'
       role_handler: '@role_handler'
       role_tasks_handler: '@role_tasks_handler'
+      journey_transition_handler: '@journey_transition_handler'

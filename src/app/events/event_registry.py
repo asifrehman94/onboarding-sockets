@@ -13,6 +13,7 @@ from src.app.events.handlers.knowledge_repository_handler import KnowledgeReposi
 from src.app.events.handlers.teammate_behaviour_handler import TeammateBehaviourHandler
 from src.app.events.handlers.role_handler import RoleHandler
 from src.app.events.handlers.role_tasks_handler import RoleTasksHandler
+from src.app.events.handlers.journey_transition_handler import JourneyTransitionHandler
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +29,8 @@ class EventRegistry(SocketIOListener):
         knowledge_repository_handler: KnowledgeRepositoryHandler,
         teammate_behaviour_handler: TeammateBehaviourHandler,
         role_handler: RoleHandler,
-        role_tasks_handler: RoleTasksHandler
+        role_tasks_handler: RoleTasksHandler,
+        journey_transition_handler: JourneyTransitionHandler
     ):
         self.connection_handler = connection_handler
         self.screen_event_handler = screen_event_handler
@@ -37,6 +39,7 @@ class EventRegistry(SocketIOListener):
         self.teammate_behaviour_handler = teammate_behaviour_handler
         self.role_handler = role_handler
         self.role_tasks_handler = role_tasks_handler
+        self.journey_transition_handler = journey_transition_handler
     
     def register_events(self, sio):
         """Register all events with their handler functions using Events enum"""
@@ -55,6 +58,7 @@ class EventRegistry(SocketIOListener):
         sio.on(Events.TEAMMATE_BEHAVIOUR, self.teammate_behaviour_handler.handle_teammate_behaviour)
         sio.on(Events.ROLE, self.role_handler.handle_role)
         sio.on(Events.ROLE_TASKS, self.role_tasks_handler.handle_role_tasks)
+        sio.on(Events.JOURNEY_TRANSITION, self.journey_transition_handler.handle_journey_transition)
     
     def _inject_sio_into_handlers(self, sio):
         """Inject sio instance into all handlers"""
@@ -64,3 +68,4 @@ class EventRegistry(SocketIOListener):
         self.teammate_behaviour_handler.sio = sio
         self.role_handler.sio = sio
         self.role_tasks_handler.sio = sio
+        self.journey_transition_handler.sio = sio

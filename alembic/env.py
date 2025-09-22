@@ -11,16 +11,18 @@ from alembic import context
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 # Import our models and configuration
-from app.core.config import settings
-from app.models.base import Base
+from src.infra.database.models.base import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 
-# Set the database URL from our settings (convert async to sync for Alembic)
-database_url = settings.database_url.replace('postgresql+asyncpg://', 'postgresql://')
-config.set_main_option('sqlalchemy.url', database_url)
+# Set the database URL from environment variables
+database_url = os.getenv('DATABASE_URL')
+if database_url:
+    # Convert async URL to sync for Alembic
+    database_url = database_url.replace('postgresql+asyncpg://', 'postgresql://')
+    config.set_main_option('sqlalchemy.url', database_url)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -30,7 +32,13 @@ if config.config_file_name is not None:
 # add your model's MetaData object here
 # for 'autogenerate' support
 # Import all models to ensure they're registered with Base.metadata
-from app.models.onboarding_content import OnboardingContent
+from src.infra.database.models.onboarding_content import OnboardingContent
+from src.infra.database.models.teammate_behaviour import TeammateBehaviour
+from src.infra.database.models.role import Role
+from src.infra.database.models.role_tasks import RoleTasks
+from src.infra.database.models.tenant_role import TenantRole
+from src.infra.database.models.tenant_tasks import TenantTasks
+from src.infra.database.models.onboarding_status import OnboardingStatus
 
 target_metadata = Base.metadata
 
