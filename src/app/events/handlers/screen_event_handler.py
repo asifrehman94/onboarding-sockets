@@ -5,6 +5,8 @@ import logging
 from typing import Dict, Any
 from datetime import datetime
 from src.domain.constants.events import Events
+from src.domain.constants.screens import Stage, Steps, Status
+from src.util.settings_progress_utility import start_setting_progress
 from src.infra.database.repositories.onboarding_content_repository import OnboardingContentRepository
 
 logger = logging.getLogger(__name__)
@@ -57,6 +59,10 @@ class ScreenEventHandler:
                 }
                 
                 await self.sio.emit(Events.MINDY, response_data, to=sid)
+                
+                if stage == Stage.ONBOARDING and step == Steps.WELCOME and status == Status.COMPLETED:
+                    await start_setting_progress(sio=self.sio, sid=sid, tenant_id=tenant_id)
+                
             else:
                 await self.sio.emit(Events.ERRORS, {
                     "warning": f"No content found for stage='{stage}', step='{step}', status='{status}'",

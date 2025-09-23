@@ -49,6 +49,8 @@ class RoleHandler:
                 await self.sio.emit(Events.ROLE, roles_data, to=sid)
                 
             elif method == 'POST':
+
+                #todo if user select a new role any exsiting task of previous role should be deleted for that tenant
                 if not tenant_id:
                     return {"success": False, "error": "tenant_id is required"}
                 

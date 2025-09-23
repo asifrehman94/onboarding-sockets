@@ -50,8 +50,6 @@ class SocketIOServerManager:
             
             logger.info(f"Socket.IO server configured on {self.host}:{self.port} with {self.workers} workers")
             
-            # Actually start the server (this blocks and keeps the process alive)
-            logger.info("Starting Socket.IO server process...")
             self.server.start()
             
         except Exception as e:
