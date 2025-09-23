@@ -23,8 +23,7 @@ class ScreenEventHandler:
     
     async def handle_screen_event(self, sid: str, data: Dict[str, Any] = None):
         """Process screen events and fetch onboarding content"""
-        logger.info(f"Screen event from {sid}: {data}")
-        #todo
+        
         if not data:
             return
         
