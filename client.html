@@ -216,21 +216,21 @@
             };
             socket.emit('screen', screenEventData);
 
-            const screenEventData1 = {
-                tenant_id: "ABCDE",
-                stage: "onboarding",
-                step: "settings", 
-                status: "completed",
-            };
-            socket.emit('screen', screenEventData1);
+            // const screenEventData1 = {
+            //     tenant_id: "ABCDE",
+            //     stage: "onboarding",
+            //     step: "settings", 
+            //     status: "completed",
+            // };
+            // socket.emit('screen', screenEventData1);
 
-            const screenEventData2 = {
-                tenant_id: "ABCDE",
-                stage: "powering-up-ai",
-                step: "communication-workspace", 
-                status: "initial",
-            };
-            socket.emit('screen', screenEventData2);
+            // const screenEventData2 = {
+            //     tenant_id: "ABCDE",
+            //     stage: "powering-up-ai",
+            //     step: "communication-workspace", 
+            //     status: "initial",
+            // };
+            // socket.emit('screen', screenEventData2);
         }
 
         function sendIntegrationEvent() {
@@ -329,28 +329,28 @@
                 return;
             }
 
-            const roleTasksData = {
-                tenant_id: "ABCDE",
-                method : "GET",
-                role_id : "b599d526-cdf1-42ea-9db2-ab9ae4369f4e",
-                payload: null
-            };
-
-            //  const roleTasksData = {
+            // const roleTasksData = {
             //     tenant_id: "ABCDE",
-            //     method : "POST",
-            //     payload: [
-            //         {
-            //         task_id : "2fcc1db9-f7b8-4855-bb1a-4b04f685b19e"
-            //         },
-            //         {
-            //         task_id : "dc959cab-6eec-4653-9987-0192a7cf0845"
-            //         },
-            //         {
-            //         task_id : "8d058d1e-4863-4221-a672-5a700f16c948"
-            //         }
-            // ]
+            //     method : "GET",
+            //     role_id : "b599d526-cdf1-42ea-9db2-ab9ae4369f4e",
+            //     payload: null
             // };
+
+             const roleTasksData = {
+                tenant_id: "ABCDE",
+                method : "POST",
+                payload: [
+                    {
+                    task_id : "2fcc1db9-f7b8-4855-bb1a-4b04f685b19e"
+                    },
+                    {
+                    task_id : "dc959cab-6eec-4653-9987-0192a7cf0845"
+                    },
+                    {
+                    task_id : "8d058d1e-4863-4221-a672-5a700f16c948"
+                    }
+            ]
+            };
 
             log(`📤 Sending ROLE_TASKS: ${JSON.stringify(roleTasksData)}`, 'sent');
             socket.emit('role-tasks', roleTasksData);
@@ -363,7 +363,7 @@
             }
 
             const journeyData = {
-                tenant_id: "ASIFCORPS",
+                tenant_id: "ABCDE",
                 stage: "onboarding",
                 step: "welcome",
                 status: 0

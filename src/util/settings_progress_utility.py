@@ -78,7 +78,6 @@ class SettingsProgressUtility:
                     tenant_id=tenant_id
                 )
                 
-                # Small delay between stages
                 if stage_index < len(self.progress_stages) - 1:
                     await asyncio.sleep(1)
             
@@ -109,10 +108,9 @@ class SettingsProgressUtility:
             tenant_id=tenant_id
         )
         
-        # Simulate progress increments
         progress_steps = [25, 50, 75, 90]
         for progress in progress_steps:
-            await asyncio.sleep(0.8)  # Delay between progress updates
+            await asyncio.sleep(0.8)
             
             sub_settings = self._update_sub_settings_progress(
                 stage["sub_settings"], 
@@ -131,7 +129,6 @@ class SettingsProgressUtility:
                 tenant_id=tenant_id
             )
         
-        # Final completion at 100%
         await asyncio.sleep(1)
         await self._emit_progress_update(
             sio=sio,
@@ -167,8 +164,7 @@ class SettingsProgressUtility:
         if not sub_settings:
             return []
         
-        # Calculate sub-setting progress based on overall progress
-        sub_progress = min(100, int(overall_progress * 1.1))  # Slightly ahead of overall
+        sub_progress = min(100, int(overall_progress * 1.1))
         
         return [
             {
@@ -214,11 +210,9 @@ class SettingsProgressUtility:
             "sub-settings": sub_settings
         }
         
-        # Add tenant_id if provided
         if tenant_id:
             progress_data["tenant_id"] = tenant_id
         
-        # Add timestamp
         progress_data["timestamp"] = datetime.utcnow().isoformat() + "Z"
         
         try:

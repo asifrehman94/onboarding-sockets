@@ -34,15 +34,12 @@ class JourneyTransitionHandler:
             
             stage = data.get('stage')
             step = data.get('step')
-            status = data.get('status')
             
             update_data = {}
             if stage is not None:
                 update_data['current_stage'] = stage
             if step is not None:
                 update_data['current_step'] = step
-            if status is not None:
-                update_data['status'] = status
             
             await self.onboarding_status_repository.create_or_update_status(
                 tenant_id=tenant_id,

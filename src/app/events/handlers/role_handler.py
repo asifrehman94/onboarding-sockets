@@ -104,6 +104,14 @@ class RoleHandler:
         )
         await self.tenant_tasks_repository.remove_all_tasks_from_tenant(tenant_id)
         
+        await self.chat_history_service.save_system_action(
+            data={"role":role.name},
+            tenant_id=tenant_id,
+            message_type="text",
+            category="text",
+            extract_content_from="role"
+        )
+
         response_data = {
             "text": f"Great — we'll tailor {tenant_id} for your {role.name} workflow.",
             "timestamp": datetime.utcnow().isoformat() + "Z"

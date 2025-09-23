@@ -53,7 +53,6 @@ class ChatHistoryService:
         success = True
         
         try:
-            # Always emit the event first
             await sio.emit(event, data, to=sid)
             logger.debug(f"Emitted {event} event to sid={sid}")
             
@@ -61,7 +60,6 @@ class ChatHistoryService:
             logger.error(f"Failed to emit {event} event to sid={sid}: {e}")
             success = False
         
-        # Save to chat history if requested
         if save_to_history and success:
             try:
                 await self._save_to_chat_history(
@@ -75,7 +73,6 @@ class ChatHistoryService:
                 
             except Exception as e:
                 logger.error(f"Failed to save chat history for tenant={tenant_id}: {e}")
-                # Don't mark as failure - emit succeeded, history is secondary
         
         return success
     
@@ -94,14 +91,12 @@ class ChatHistoryService:
             logger.warning("Cannot save to chat history: tenant_id is required")
             return
         
-        # Extract content from data
         content = self._extract_content(data, extract_content_from)
         
         if not content:
             logger.warning(f"No content extracted from data for tenant={tenant_id}")
             return
         
-        # Save to chat history
         await self.chat_history_repository.save_chat_message(
             tenant_id=tenant_id,
             role=role,
@@ -124,22 +119,18 @@ class ChatHistoryService:
             Extracted content as string
         """
         if extract_from is None:
-            # Return entire data as JSON string
             return json.dumps(data, ensure_ascii=False)
         
         if extract_from in data:
             content = data[extract_from]
-            # Convert to string if not already
             return str(content) if content is not None else ""
         
-        # Try common field names as fallback
         common_fields = ["text", "message", "content", "description", "error"]
         for field in common_fields:
             if field in data and data[field]:
                 logger.debug(f"Using fallback field '{field}' for content extraction")
                 return str(data[field])
         
-        # Last resort - return JSON string
         logger.debug("No suitable field found, using full JSON as content")
         return json.dumps(data, ensure_ascii=False)
     

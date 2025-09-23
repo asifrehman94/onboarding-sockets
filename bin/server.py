@@ -28,20 +28,18 @@ class Main:
                 f"{directory}/repositories.yml",
                 f"{directory}/redis.yml",
                 f"{directory}/event_handlers.yml",
+                f"{directory}/api_routers.yml",
                 f"{directory}/socketio.yml",
                 f"{directory}/server.yml",
             ]
         )
 
-        # Initialize database
         database_manager = container.get("database_manager")
         await database_manager.init_database()
 
-        # Initialize Redis
         redis_manager = container.get("redis_manager")
         await redis_manager.connect()
 
-        # Get and start the Socket.IO server
         socketio_server = container.get("socketio_server")
         socketio_server.start()
 

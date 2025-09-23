@@ -1,0 +1,5 @@
+services:
+  api_router_registry:
+    class: src.api.router_registry.APIRouterRegistry
+    kwargs:
+      routers: []

@@ -126,8 +126,15 @@ class RoleTasksHandler:
             "text": task_names_text,
             "timestamp": datetime.utcnow().isoformat() + "Z"
         }
-
-        await self.sio.emit(Events.MINDY, tasks_response, to=sid)
+        
+        await self.chat_history_service.emit_assistant_message(
+            sio=self.sio,
+            event=Events.MINDY,
+            data=tasks_response,
+            sid=sid,
+            tenant_id=tenant_id,
+            extract_content_from="text"
+        )
 
         response_data = {
             "text": f"Got it — we'll start automating these right away.",

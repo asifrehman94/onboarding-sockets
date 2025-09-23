@@ -27,7 +27,6 @@ class RedisManager:
                 health_check_interval=30
             )
             
-            # Test connection
             await self.redis_client.ping()
             logger.info("Redis connection established successfully")
             
