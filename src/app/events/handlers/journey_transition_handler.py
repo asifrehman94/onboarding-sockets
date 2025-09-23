@@ -13,7 +13,10 @@ logger = logging.getLogger(__name__)
 class JourneyTransitionHandler:
     """Handler for journey transition events"""
     
-    def __init__(self, onboarding_status_repository: OnboardingStatusRepository):
+    def __init__(
+        self, 
+        onboarding_status_repository: OnboardingStatusRepository
+    ):
         self.sio = None
         self.onboarding_status_repository = onboarding_status_repository
     

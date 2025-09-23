@@ -15,7 +15,11 @@ logger = logging.getLogger(__name__)
 class TeammateBehaviourHandler:
     """Handler for teammate behaviour events"""
     
-    def __init__(self, teammate_behaviour_repository: TeammateBehaviourRepository,chat_history_service: ChatHistoryService):
+    def __init__(
+        self, 
+        teammate_behaviour_repository: TeammateBehaviourRepository,
+        chat_history_service: ChatHistoryService
+    ):
         self.teammate_behaviour_repository = teammate_behaviour_repository
         self.chat_history_service = chat_history_service
         self.sio = None

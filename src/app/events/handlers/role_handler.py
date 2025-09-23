@@ -16,8 +16,14 @@ logger = logging.getLogger(__name__)
 class RoleHandler:
     """Handler for role events"""
     
-    def __init__(self, role_repository: RoleRepository, tenant_role_repository: TenantRoleRepository, tenant_tasks_repository: TenantTasksRepository, chat_history_service: ChatHistoryService):
-        self.sio = None  # Will be injected by EventRegistry
+    def __init__(
+        self, 
+        role_repository: RoleRepository, 
+        tenant_role_repository: TenantRoleRepository, 
+        tenant_tasks_repository: TenantTasksRepository, 
+        chat_history_service: ChatHistoryService
+    ):
+        self.sio = None
         self.role_repository = role_repository
         self.tenant_role_repository = tenant_role_repository
         self.tenant_tasks_repository = tenant_tasks_repository

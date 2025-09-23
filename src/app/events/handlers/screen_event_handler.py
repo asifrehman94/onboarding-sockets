@@ -16,7 +16,11 @@ logger = logging.getLogger(__name__)
 class ScreenEventHandler:
     """Handler for screen events with database integration"""
     
-    def __init__(self, onboarding_repository: OnboardingContentRepository,chat_history_service: ChatHistoryService):
+    def __init__(
+        self, 
+        onboarding_repository: OnboardingContentRepository,
+        chat_history_service: ChatHistoryService
+    ):
         self.onboarding_repository = onboarding_repository
         self.chat_history_service = chat_history_service
         self.sio = None

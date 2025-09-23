@@ -15,7 +15,11 @@ logger = logging.getLogger(__name__)
 class RoleTasksHandler:
     """Handler for role tasks events"""
     
-    def __init__(self, role_tasks_repository: RoleTasksRepository, tenant_tasks_repository: TenantTasksRepository,chat_history_service: ChatHistoryService):
+    def __init__(
+        self, role_tasks_repository: RoleTasksRepository, 
+        tenant_tasks_repository: TenantTasksRepository,
+        chat_history_service: ChatHistoryService
+    ):
         self.sio = None
         self.role_tasks_repository = role_tasks_repository
         self.tenant_tasks_repository = tenant_tasks_repository
