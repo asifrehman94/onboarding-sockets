@@ -273,25 +273,23 @@
                 return;
             }
 
-            const behaviourData = {
-                tenant_id: "ABCDE",
-                method : "POST",
-                payload: {
-                    message : "Updated communication preferences"
-                }
-            };
             // const behaviourData = {
             //     tenant_id: "ABCDE",
-            //     method : "GET",
+            //     method : "POST",
             //     payload: {
-            //         id : "d644cae6-d12f-4b37-a4a1-42ec7a8043ce"
+            //         message : "Be GOOD!!"
             //     }
             // };
+            const behaviourData = {
+                tenant_id: "ABCDE",
+                method : "GET",
+                payload: null
+            };
             // const behaviourData = {
             //     tenant_id: "ABCDE",
             //     method : "DELETE",
             //     payload: {
-            //         id : "d644cae6-d12f-4b37-a4a1-42ec7a8043ce"
+            //         id : "67f2c920-d6b6-4a13-ad29-9a503fada413"
             //     }
             // };
 
@@ -331,29 +329,28 @@
                 return;
             }
 
-            // const roleTasksData = {
-            //     tenant_id: "ABCDE",
-            //     role: "senior_developer",
-            //     tasks: ["code_review", "mentoring", "architecture_design"],
-            //     status: "configured",
-            //     message: "Role tasks configured"
-            // };
-
-             const roleTasksData = {
+            const roleTasksData = {
                 tenant_id: "ABCDE",
-                method : "POST",
-                payload: [
-                    {
-                    task_id : "9f96473d-2355-4e93-ad96-4a5a07409757"
-                    },
-                    {
-                    task_id : "157aaa5a-68a6-40fb-a15b-a13656166713"
-                    },
-                    {
-                    task_id : "4b6cb932-6f18-4164-96dc-bf91856982e5"
-                    }
-            ]
+                method : "GET",
+                role_id : "b599d526-cdf1-42ea-9db2-ab9ae4369f4e",
+                payload: null
             };
+
+            //  const roleTasksData = {
+            //     tenant_id: "ABCDE",
+            //     method : "POST",
+            //     payload: [
+            //         {
+            //         task_id : "2fcc1db9-f7b8-4855-bb1a-4b04f685b19e"
+            //         },
+            //         {
+            //         task_id : "dc959cab-6eec-4653-9987-0192a7cf0845"
+            //         },
+            //         {
+            //         task_id : "8d058d1e-4863-4221-a672-5a700f16c948"
+            //         }
+            // ]
+            // };
 
             log(`📤 Sending ROLE_TASKS: ${JSON.stringify(roleTasksData)}`, 'sent');
             socket.emit('role-tasks', roleTasksData);
