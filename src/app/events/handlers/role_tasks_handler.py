@@ -7,6 +7,7 @@ from datetime import datetime
 from src.domain.constants.events import Events
 from src.infra.database.repositories.role_tasks_repository import RoleTasksRepository
 from src.infra.database.repositories.tenant_tasks_repository import TenantTasksRepository
+from src.infra.services.chat_history_service import ChatHistoryService
 
 logger = logging.getLogger(__name__)
 
@@ -14,10 +15,11 @@ logger = logging.getLogger(__name__)
 class RoleTasksHandler:
     """Handler for role tasks events"""
     
-    def __init__(self, role_tasks_repository: RoleTasksRepository, tenant_tasks_repository: TenantTasksRepository):
+    def __init__(self, role_tasks_repository: RoleTasksRepository, tenant_tasks_repository: TenantTasksRepository,chat_history_service: ChatHistoryService):
         self.sio = None
         self.role_tasks_repository = role_tasks_repository
         self.tenant_tasks_repository = tenant_tasks_repository
+        self.chat_history_service = chat_history_service
     
     async def handle_role_tasks(self, sid: str, data: Dict[str, Any] = None):
         """Handle role tasks events"""
@@ -97,8 +99,16 @@ class RoleTasksHandler:
                 response_data = {
                     "text": f"Got it — we’ll start automating these right away.",
                     "timestamp": datetime.utcnow().isoformat() + "Z"
-                }                
-                await self.sio.emit(Events.MINDY, response_data, to=sid)
+                }
+                
+                await self.chat_history_service.emit_assistant_message(
+                    sio=self.sio,
+                    event=Events.MINDY,
+                    data=response_data,
+                    sid=sid,
+                    tenant_id=tenant_id,
+                    extract_content_from="text"
+                )
                 
                 return {"success": True}
                 

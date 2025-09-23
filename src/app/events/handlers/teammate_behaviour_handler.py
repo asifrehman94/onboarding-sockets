@@ -7,6 +7,7 @@ from datetime import datetime
 from uuid import UUID
 from src.domain.constants.events import Events
 from src.infra.database.repositories.teammate_behaviour_repository import TeammateBehaviourRepository
+from src.infra.services.chat_history_service import ChatHistoryService
 
 logger = logging.getLogger(__name__)
 
@@ -14,9 +15,10 @@ logger = logging.getLogger(__name__)
 class TeammateBehaviourHandler:
     """Handler for teammate behaviour events"""
     
-    def __init__(self, teammate_behaviour_repository: TeammateBehaviourRepository):
+    def __init__(self, teammate_behaviour_repository: TeammateBehaviourRepository,chat_history_service: ChatHistoryService):
         self.teammate_behaviour_repository = teammate_behaviour_repository
-        self.sio = None  # Will be injected by EventRegistry
+        self.chat_history_service = chat_history_service
+        self.sio = None
     
     async def handle_teammate_behaviour(self, sid: str, data: Dict[str, Any] = None):
         """Handle teammate behaviour events with full CRUD operations"""
@@ -31,8 +33,6 @@ class TeammateBehaviourHandler:
             
             if not tenant_id:
                 return {"success": False, "error": "tenant_id is required"}
-            
-            logger.info(f"Processing method: {method} for tenant: {tenant_id}")
 
             if method == "POST":
                 payload = data.get('payload', {})
@@ -41,9 +41,17 @@ class TeammateBehaviourHandler:
                 if not prompt:
                     return {"success": False, "error": "prompt/message is required"}
                 
-                behaviour = await self.teammate_behaviour_repository.save_behaviour(
+                await self.teammate_behaviour_repository.save_behaviour(
                     tenant_id=tenant_id,
                     prompt=prompt
+                )
+                
+                await self.chat_history_service.save_user_action(
+                    data=payload,
+                    tenant_id=tenant_id,
+                    message_type="text",
+                    category="text",
+                    extract_content_from="message"
                 )
                 
                 response_data = {
@@ -51,7 +59,14 @@ class TeammateBehaviourHandler:
                     "timestamp": datetime.utcnow().isoformat() + "Z"
                 }
                 
-                await self.sio.emit(Events.MINDY, response_data, to=sid)
+                await self.chat_history_service.emit_assistant_message(
+                    sio=self.sio,
+                    event=Events.MINDY,
+                    data=response_data,
+                    sid=sid,
+                    tenant_id=tenant_id,
+                    extract_content_from="text"
+                )
                 
                 return {"success": True}
                 

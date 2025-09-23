@@ -7,6 +7,8 @@ from datetime import datetime
 from src.domain.constants.events import Events
 from src.infra.database.repositories.role_repository import RoleRepository
 from src.infra.database.repositories.tenant_role_repository import TenantRoleRepository
+from src.infra.database.repositories.tenant_tasks_repository import TenantTasksRepository
+from src.infra.services.chat_history_service import ChatHistoryService
 
 logger = logging.getLogger(__name__)
 
@@ -14,10 +16,12 @@ logger = logging.getLogger(__name__)
 class RoleHandler:
     """Handler for role events"""
     
-    def __init__(self, role_repository: RoleRepository, tenant_role_repository: TenantRoleRepository):
+    def __init__(self, role_repository: RoleRepository, tenant_role_repository: TenantRoleRepository, tenant_tasks_repository: TenantTasksRepository, chat_history_service: ChatHistoryService):
         self.sio = None  # Will be injected by EventRegistry
         self.role_repository = role_repository
         self.tenant_role_repository = tenant_role_repository
+        self.tenant_tasks_repository = tenant_tasks_repository
+        self.chat_history_service = chat_history_service
     
     async def handle_role(self, sid: str, data: Dict[str, Any] = None):
         """Handle role events"""
@@ -49,8 +53,6 @@ class RoleHandler:
                 await self.sio.emit(Events.ROLE, roles_data, to=sid)
                 
             elif method == 'POST':
-
-                #todo if user select a new role any exsiting task of previous role should be deleted for that tenant
                 if not tenant_id:
                     return {"success": False, "error": "tenant_id is required"}
                 
@@ -65,17 +67,26 @@ class RoleHandler:
                 if not role:
                     return {"success": False, "error": f"Role with id '{role_id}' not found"}
                 
-                tenant_role = await self.tenant_role_repository.assign_role_to_tenant(
+                
+                await self.tenant_role_repository.assign_role_to_tenant(
                     tenant_id=tenant_id,
                     role_id=role_id
                 )
+                await self.tenant_tasks_repository.remove_all_tasks_from_tenant(tenant_id)
                 
                 response_data = {
-                    "text": f"Great — we’ll tailor {tenant_id} for your {role.name} workflow.",
+                    "text": f"Great — we'll tailor {tenant_id} for your {role.name} workflow.",
                     "timestamp": datetime.utcnow().isoformat() + "Z"
                 }
                 
-                await self.sio.emit(Events.MINDY, response_data, to=sid)
+                await self.chat_history_service.emit_assistant_message(
+                    sio=self.sio,
+                    event=Events.MINDY,
+                    data=response_data,
+                    sid=sid,
+                    tenant_id=tenant_id,
+                    extract_content_from="text"
+                )
                 
                 return {"success": True}
                 

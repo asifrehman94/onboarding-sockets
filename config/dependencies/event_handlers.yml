@@ -7,6 +7,7 @@ services:
     class: src.app.events.handlers.screen_event_handler.ScreenEventHandler
     kwargs:
       onboarding_repository: '@onboarding_content_repository'
+      chat_history_service: '@chat_history_service'
 
   integration_handler:
     class: src.app.events.handlers.integration_handler.IntegrationHandler
@@ -18,18 +19,22 @@ services:
     class: src.app.events.handlers.teammate_behaviour_handler.TeammateBehaviourHandler
     kwargs:
       teammate_behaviour_repository: '@teammate_behaviour_repository'
+      chat_history_service: '@chat_history_service'
 
   role_handler:
     class: src.app.events.handlers.role_handler.RoleHandler
     kwargs:
       role_repository: '@role_repository'
       tenant_role_repository: '@tenant_role_repository'
+      tenant_tasks_repository: '@tenant_tasks_repository'
+      chat_history_service: '@chat_history_service'
 
   role_tasks_handler:
     class: src.app.events.handlers.role_tasks_handler.RoleTasksHandler
     kwargs:
       role_tasks_repository: '@role_tasks_repository'
       tenant_tasks_repository: '@tenant_tasks_repository'
+      chat_history_service: '@chat_history_service'
 
   journey_transition_handler:
     class: src.app.events.handlers.journey_transition_handler.JourneyTransitionHandler

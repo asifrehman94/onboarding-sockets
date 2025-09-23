@@ -8,6 +8,7 @@ from src.domain.constants.events import Events
 from src.domain.constants.screens import Stage, Steps, Status
 from src.util.settings_progress_utility import start_setting_progress
 from src.infra.database.repositories.onboarding_content_repository import OnboardingContentRepository
+from src.infra.services.chat_history_service import ChatHistoryService
 
 logger = logging.getLogger(__name__)
 
@@ -15,8 +16,9 @@ logger = logging.getLogger(__name__)
 class ScreenEventHandler:
     """Handler for screen events with database integration"""
     
-    def __init__(self, onboarding_repository: OnboardingContentRepository):
+    def __init__(self, onboarding_repository: OnboardingContentRepository,chat_history_service: ChatHistoryService):
         self.onboarding_repository = onboarding_repository
+        self.chat_history_service = chat_history_service
         self.sio = None
     
     async def handle_screen_event(self, sid: str, data: Dict[str, Any] = None):
@@ -52,13 +54,17 @@ class ScreenEventHandler:
                 
                 response_data = {
                     "text": text,
-                    "timestamp": datetime.utcnow().isoformat() + "Z",
-                    "stage": stage,
-                    "step": step,
-                    "status": status
+                    "timestamp": datetime.utcnow().isoformat() + "Z"
                 }
-                
-                await self.sio.emit(Events.MINDY, response_data, to=sid)
+
+                await self.chat_history_service.emit_assistant_message(
+                    sio=self.sio,
+                    event=Events.MINDY,
+                    data=response_data,
+                    sid=sid,
+                    tenant_id=tenant_id,
+                    extract_content_from="text"
+                )
                 
                 if stage == Stage.ONBOARDING and step == Steps.WELCOME and status == Status.COMPLETED:
                     await start_setting_progress(sio=self.sio, sid=sid, tenant_id=tenant_id)
