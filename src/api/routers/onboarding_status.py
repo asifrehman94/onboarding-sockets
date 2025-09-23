@@ -18,9 +18,18 @@ router = APIRouter(tags=["onboarding-status"])
 
 class OnboardingStatusUpdate(BaseModel):
     """Request model for updating onboarding status"""
-    status: Optional[int] = Field(None, description="Status (0, 1, or 2)", ge=0, le=2)
-    asset_discovery_configured: Optional[bool] = Field(None, description="Asset discovery configured")
-    case_management_configured: Optional[bool] = Field(None, description="Case management configured")
+    status: Optional[int] = Field(None, description="Status (0, 1, or 2)", ge=0, le=2, example=1)
+    asset_discovery_configured: Optional[bool] = Field(None, description="Asset discovery configured", example=False)
+    case_management_configured: Optional[bool] = Field(None, description="Case management configured", example=False)
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "status": 1,
+                "asset_discovery_configured": False,
+                "case_management_configured": False
+            }
+        }
 
 
 @router.get("/status")
@@ -45,8 +54,7 @@ async def get_onboarding_status(
             "tasks": [],
             "chathistory": []
         }
-        
-        
+                
         onboarding_status = await onboarding_repo.get_by_tenant_id(tenant_id)
         if onboarding_status:
             response["status"] = onboarding_status.status or 0
@@ -54,8 +62,17 @@ async def get_onboarding_status(
             response["current_step"] = onboarding_status.current_step
             response["asset_discovery_configured"] = onboarding_status.asset_discovery_configured or False
             response["case_management_configured"] = onboarding_status.case_management_configured or False
-        
-        
+        else:
+            default_status = await onboarding_repo.create_or_update_status(
+                tenant_id=tenant_id,
+                status=0
+            )
+            response["status"] = default_status.status
+            response["current_stage"] = default_status.current_stage
+            response["current_step"] = default_status.current_step
+            response["asset_discovery_configured"] = default_status.asset_discovery_configured
+            response["case_management_configured"] = default_status.case_management_configured
+                
         chat_history = await chat_repo.get_chat_history_by_tenant_id(tenant_id)
         if chat_history:
             response["chathistory"] = [
@@ -90,7 +107,7 @@ async def get_onboarding_status(
 
 
 @router.post("/update-status")
-async def save_onboarding_status(
+async def update_onboarding_status(
     payload: OnboardingStatusUpdate,
     tenant_id: str = Query(..., description="Tenant ID (required)"),
     onboarding_repo: OnboardingStatusRepository = Depends(get_onboarding_status_repository)
