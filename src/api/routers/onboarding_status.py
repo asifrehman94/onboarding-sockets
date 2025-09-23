@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Query, Depends, HTTPException
+from fastapi import APIRouter, Query, Depends, HTTPException, Body
 from datetime import datetime
 from typing import List, Dict, Any, Optional
+from pydantic import BaseModel, Field
 from src.api.dependencies import (
     get_onboarding_status_repository,
     get_chat_history_repository,
@@ -13,6 +14,13 @@ from src.infra.database.repositories.tenant_role_repository import TenantRoleRep
 from src.infra.database.repositories.tenant_tasks_repository import TenantTasksRepository
 
 router = APIRouter(tags=["onboarding-status"])
+
+
+class OnboardingStatusUpdate(BaseModel):
+    """Request model for updating onboarding status"""
+    status: Optional[int] = Field(None, description="Status (0, 1, or 2)", ge=0, le=2)
+    asset_discovery_configured: Optional[bool] = Field(None, description="Asset discovery configured")
+    case_management_configured: Optional[bool] = Field(None, description="Case management configured")
 
 
 @router.get("/status")
@@ -83,12 +91,53 @@ async def get_onboarding_status(
 
 @router.post("/update-status")
 async def save_onboarding_status(
-    tenant_id: str = Query(..., description="Tenant ID (required)")
+    payload: OnboardingStatusUpdate,
+    tenant_id: str = Query(..., description="Tenant ID (required)"),
+    onboarding_repo: OnboardingStatusRepository = Depends(get_onboarding_status_repository)
 ):
-    
-    return {
-        "message": f"Saving onboarding status for tenant: {tenant_id}",
-        "tenant_id": tenant_id,
-        "timestamp": datetime.utcnow().isoformat() + "Z",
-        "status": "endpoint_ready"
-    }
+    """Update onboarding status for a tenant"""
+    try:
+        if all(field is None for field in [payload.status, payload.asset_discovery_configured, payload.case_management_configured]):
+            raise HTTPException(
+                status_code=400,
+                detail="At least one field must be provided for update (status, asset_discovery_configured, or case_management_configured)"
+            )
+        
+        existing_status = await onboarding_repo.get_by_tenant_id(tenant_id)
+        
+        if existing_status:
+            update_fields = {}
+            if payload.status is not None:
+                update_fields['status'] = payload.status
+            if payload.asset_discovery_configured is not None:
+                update_fields['asset_discovery_configured'] = payload.asset_discovery_configured
+            if payload.case_management_configured is not None:
+                update_fields['case_management_configured'] = payload.case_management_configured
+            
+            updated_status = await onboarding_repo.update_by_tenant_id(
+                tenant_id, **update_fields
+            )
+            
+            return {
+                "message": f"Successfully updated onboarding status for tenant: {tenant_id}",
+                "tenant_id": tenant_id,
+                "status": updated_status.status,
+                "asset_discovery_configured": updated_status.asset_discovery_configured,
+                "case_management_configured": updated_status.case_management_configured,
+                "current_stage": updated_status.current_stage,
+                "current_step": updated_status.current_step,
+                "timestamp": datetime.utcnow().isoformat() + "Z"
+            }
+        else:
+            raise HTTPException(
+                status_code=404,
+                detail=f"No onboarding data found for {tenant_id}"
+            )
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to update onboarding status: {str(e)}"
+        )

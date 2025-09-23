@@ -6,7 +6,6 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy import select
 from src.infra.database.models.chat_history import ChatHistory
 from src.infra.database.repositories.base_repository import BaseRepository
-from src.domain.constants.chat_enums import Roles, MessageType, ContentType
 import logging
 
 logger = logging.getLogger(__name__)
