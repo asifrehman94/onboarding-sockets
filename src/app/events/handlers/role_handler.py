@@ -76,10 +76,8 @@ class RoleHandler:
             role_dict = role.to_dict()
             role_dict["selected"] = (tenant_current_role == role.id) if tenant_current_role else False
             roles_data.append(role_dict)
-        
-        await self.sio.emit(Events.ROLE, roles_data, to=sid)
-        
-        return {"success": True}
+                
+        return {"success": True, "data": roles_data}
     
     async def _handle_assign_role(self, sid: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """Handle POST request - assign role to tenant"""

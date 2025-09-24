@@ -33,6 +33,7 @@ def get_container() -> Container:
             f"{directory}/database.yml",
             f"{directory}/repositories.yml",
             f"{directory}/redis.yml",
+            f"{directory}/shared.yml",
             f"{directory}/event_handlers.yml",
             f"{directory}/api_routers.yml",
             f"{directory}/socketio.yml",

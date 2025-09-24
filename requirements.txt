@@ -29,6 +29,7 @@ aiofiles==23.2.1
 
 # Additional async libraries
 aiohttp==3.9.1
+python-jose[cryptography]==3.5.0
 
 # IoC Container
 py-ioc @ git+https://bitbucket.org/disrupt-open-source/py_ioc@master

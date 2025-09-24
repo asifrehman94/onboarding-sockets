@@ -74,10 +74,8 @@ class RoleTasksHandler:
             task_dict = task.to_dict()
             task_dict["selected"] = task.id in tenant_current_task_ids
             tasks_data.append(task_dict)
-
-        await self.sio.emit(Events.ROLE_TASKS, tasks_data, to=sid)
         
-        return {"success": True}
+        return {"success": True, "data": tasks_data}
     
     async def _handle_assign_tasks(self, sid: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """Handle POST request - assign selected tasks to tenant"""

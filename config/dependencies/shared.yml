@@ -1,0 +1,7 @@
+services:
+  authentication_handler:
+    class: src.shared.services.authentication.Authenticator
+    kwargs:
+      client_secret_url: '@CLIENT_SECRET_URL'
+      client_id: '@CLIENT_ID'
+      introspect_url: '@INTROSPECT_URL'

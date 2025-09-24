@@ -263,7 +263,7 @@
             };
 
             log(`📤 Sending KNOWLEDGE_REPOSITORY: ${JSON.stringify(knowledgeData)}`, 'sent');
-            socket.emit('knowledge_repository', knowledgeData);
+            socket.emit('knowledge-repository', knowledgeData);
         }
 
         function sendTeammateBehaviourEvent() {
@@ -319,7 +319,10 @@
             //     }
             // };
 
-            socket.emit('role', roleData);
+            socket.emit('role', roleData, (response) => {
+                    
+                    console.log('Server response:', response);
+                    });
         }
 
         function sendRoleTasksEvent() {
@@ -328,12 +331,12 @@
                 return;
             }
 
-            // const roleTasksData = {
-            //     tenant_id: "ABCDE",
-            //     method : "GET",
-            //     role_id : "b599d526-cdf1-42ea-9db2-ab9ae4369f4e",
-            //     payload: null
-            // };
+            const roleTasksData = {
+                tenant_id: "ABCDE",
+                method : "GET",
+                role_id : "807016dd-e2e5-4006-abd7-64ea0a8dfce8",
+                payload: null
+            };
 
             //  const roleTasksData = {
             //     tenant_id: "ABCDE",
@@ -352,7 +355,10 @@
             // };
 
             log(`📤 Sending ROLE_TASKS: ${JSON.stringify(roleTasksData)}`, 'sent');
-            socket.emit('role-tasks', roleTasksData);
+            socket.emit('role-tasks', roleTasksData, (response) => {
+                    
+                    console.log('Server response:', response);
+                    });
         }
 
         function sendJourneyEvent() {

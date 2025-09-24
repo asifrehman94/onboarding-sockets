@@ -8,11 +8,8 @@ __pycache__/
 
 **/test_data/
 
-nifi/data/
-
 venv/
 
 .ipynb_checkpoints
 .env
 ALEMBIC_COMMANDS.MD
-purevpn-spring_onboarding/

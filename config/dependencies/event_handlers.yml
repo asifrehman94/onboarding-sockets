@@ -17,6 +17,8 @@ services:
 
   knowledge_repository_handler:
     class: src.app.events.handlers.knowledge_repository_handler.KnowledgeRepositoryHandler
+    kwargs: #remove just for testing
+      authentication_handler: '@authentication_handler'
 
   teammate_behaviour_handler:
     class: src.app.events.handlers.teammate_behaviour_handler.TeammateBehaviourHandler
