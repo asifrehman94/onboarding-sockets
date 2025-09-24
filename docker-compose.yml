@@ -16,7 +16,6 @@ services:
       - ./config:/app/config
       - ./logs:/app/logs
       - ./alembic:/app/alembic
-      - ./scripts:/app/scripts
       - ./seeds:/app/seeds
     networks:
       - app-network

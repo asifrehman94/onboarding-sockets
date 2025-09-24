@@ -32,21 +32,21 @@
     "step": "knowledge-repository",
     "status": "completed",
     "heading": "📁 Documents Uploaded Successfully!",
-    "text": "Upload\n✅ Your files are now securely stored in your Knowledge Repository. \n🧠 I'll scan, tag, and learn from them — so I can take actions, respond to incidents, and \ngenerate reports based on your organization's actual policies and procedures.\n\n📌 You can add or update documents anytime from your Repository settings.\n\n🚀 You're all set! Your AI Teammate is now ready to start assisting you."
+    "text": "✅ Your files are now securely stored in your Knowledge Repository. \n🧠 I'll scan, tag, and learn from them — so I can take actions, respond to incidents, and \ngenerate reports based on your organization's actual policies and procedures.\n\n📌 You can add or update documents anytime from your Repository settings.\n\n🚀 You're all set! Your AI Teammate is now ready to start assisting you."
   },
   {
     "stage": "powering-up-ai",
     "step": "ai-behaviour",
     "status": "initial",
     "heading": "🧠 Set Your AI Teammate's Behavior",
-    "text": "You can guide how I behave by telling me how you'd like me to communicate, prioritize, or handle different situations.\nUpload\nFor example, you might say:\n– \"Be formal when writing reports\"\n– \"Flag critical risks to me immediately and explain why\"\n– \"Escalate only when an SLA is at risk\"\n\n💬 Don't worry about being too precise — just talk to me like you would with a new teammate!\n\n✍️ Write any preferences below — \nor feel free to skip for now. You can always configure this later from the AI Teammate Settings."
+    "text": "You can guide how I behave by telling me how you'd like me to communicate, prioritize, or handle different situations.\n\nFor example, you might say:\n– \"Be formal when writing reports\"\n– \"Flag critical risks to me immediately and explain why\"\n– \"Escalate only when an SLA is at risk\"\n\n💬 Don't worry about being too precise — just talk to me like you would with a new teammate!\n\n✍️ Write any preferences below — \nor feel free to skip for now. You can always configure this later from the AI Teammate Settings."
   },
   {
     "stage": "powering-up-ai",
     "step": "ai-behaviour",
     "status": "completed",
     "heading": "🎉 Your AI Teammate is Ready!",
-    "text": "You've completed the personalization — your AI Teammate now understands how to communicate, \nprioritize, and act like a true member of your team."
+    "text": "You've completed the personalization — your AI Teammate now understands how to communicate, prioritize, and act like a true member of your team."
   },
   {
     "stage": "profile-building",
