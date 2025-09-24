@@ -24,8 +24,6 @@ from src.infra.database.models.tenant_role import TenantRole
 from src.infra.database.models.tenant_tasks import TenantTasks
 
 
-# Define role-specific tasks here
-# Modify this dictionary to assign different tasks to different roles
 ROLE_TASKS = {
     "SOC-L1 Analyst": [
         "Manual Data Consolidation",

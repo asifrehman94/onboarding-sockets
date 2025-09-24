@@ -1,0 +1,92 @@
+[
+  {
+    "role_name": "SOC-L1 Analyst",
+    "tasks": [
+      "Manual Data Consolidation",
+      "Alert Overload & Noise",
+      "New Asset/Event Tracking",
+      "Slow Incident Detection",
+      "Inefficient Incident Triage",
+      "Delayed Manual Responses",
+      "Lack of Standardized Workflows",
+      "Fragmented Security View",
+      "Complex Cloud Attack Surface",
+      "Threat Intelligence Integration"
+    ]
+  },
+  {
+    "role_name": "SOC-L2 Analyst",
+    "tasks": [
+      "Manual Data Consolidation",
+      "Alert Overload & Noise",
+      "New Asset/Event Tracking",
+      "Slow Incident Detection",
+      "Inefficient Incident Triage",
+      "Delayed Manual Responses",
+      "Lack of Standardized Workflows",
+      "Fragmented Security View",
+      "Complex Cloud Attack Surface",
+      "Threat Intelligence Integration"
+    ]
+  },
+  {
+    "role_name": "SOC-L3 Analyst",
+    "tasks": [
+      "Manual Data Consolidation",
+      "Alert Overload & Noise",
+      "New Asset/Event Tracking",
+      "Slow Incident Detection",
+      "Inefficient Incident Triage",
+      "Delayed Manual Responses",
+      "Lack of Standardized Workflows",
+      "Fragmented Security View",
+      "Complex Cloud Attack Surface",
+      "Threat Intelligence Integration"
+    ]
+  },
+  {
+    "role_name": "SOC Manager",
+    "tasks": [
+      "Manual Data Consolidation",
+      "Alert Overload & Noise",
+      "New Asset/Event Tracking",
+      "Slow Incident Detection",
+      "Inefficient Incident Triage",
+      "Delayed Manual Responses",
+      "Lack of Standardized Workflows",
+      "Fragmented Security View",
+      "Complex Cloud Attack Surface",
+      "Threat Intelligence Integration"
+    ]
+  },
+  {
+    "role_name": "CISO",
+    "tasks": [
+      "Manual Data Consolidation",
+      "Alert Overload & Noise",
+      "New Asset/Event Tracking",
+      "Slow Incident Detection",
+      "Inefficient Incident Triage",
+      "Delayed Manual Responses",
+      "Lack of Standardized Workflows",
+      "Fragmented Security View",
+      "Complex Cloud Attack Surface",
+      "Threat Intelligence Integration"
+    ]
+  },
+  {
+    "role_name": "GRC Executive",
+    "tasks": [
+      "Manual Data Consolidation",
+      "Alert Overload & Noise",
+      "New Asset/Event Tracking",
+      "Slow Incident Detection",
+      "Inefficient Incident Triage",
+      "Delayed Manual Responses",
+      "Lack of Standardized Workflows",
+      "Fragmented Security View",
+      "Complex Cloud Attack Surface",
+      "Threat Intelligence Integration"
+    ]
+  }
+]
