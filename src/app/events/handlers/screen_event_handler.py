@@ -80,7 +80,7 @@ class ScreenEventHandler:
                 )
                 
                 if stage == Stage.ONBOARDING and step == Steps.WELCOME and status == Status.COMPLETED:
-                    await start_setting_progress(sio=self.sio, sid=sid, tenant_id=tenant_id)
+                    await start_setting_progress(sio=self.sio, sid=sid, chat_history=self.chat_history_service, tenant_id=tenant_id)
                 
             else:
                 await self.sio.emit(Events.ERRORS, {

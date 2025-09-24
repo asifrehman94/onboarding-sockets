@@ -10,14 +10,16 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime
 import uuid
 from src.domain.constants.events import Events
-from src.infra.services.chat_history_service import ChatHistoryService
 
 logger = logging.getLogger(__name__)
 
 
 class SettingsProgressUtility:
-    
-    def __init__(self):
+    def __init__(
+        self,
+        chat_history_service: None
+    ):
+        self.chat_history_service = chat_history_service
         self.progress_stages = self._get_progress_stages()
     
     def _get_progress_stages(self) -> List[Dict[str, Any]]:
@@ -34,7 +36,7 @@ class SettingsProgressUtility:
                 "type": "setting-2", 
                 "heading": "Setting Up Your Secure Vault",
                 "completion_mindy_heading": "",
-                "completion_mindy_text": "Your Secure Vault is now being created — a private, encrypted space just for you.\n\nThis is where all your API keys, credentials, and sensitive configurations will be stored. Only you — and no one else — can access it, not even our team..",
+                "completion_mindy_text": "Your Secure Vault is now being created — a private, encrypted space just for you.\n\nThis is where all your API keys, credentials, and sensitive configurations will be stored. Only you — and no one else — can access it, not even our team.",
                 "sub_settings": []
             },
             {
@@ -142,12 +144,24 @@ class SettingsProgressUtility:
             sub_settings=self._get_completed_sub_settings(stage["sub_settings"]),
             tenant_id=tenant_id
         )
+        await asyncio.sleep(1)
+        heading = stage["completion_mindy_heading"]
+        text = stage["completion_mindy_text"]
+        combined_content = f"{heading}\n{text}" if heading and text else (heading or text or "")
         response_data = {
-            "heading": stage["completion_mindy_heading"],
-            "text": stage["completion_mindy_text"],
+            "heading": heading,
+            "text": text,
+            "combined_content": combined_content,
             "timestamp": datetime.utcnow().isoformat() + "Z"
         }
-        await sio.emit(Events.MINDY, response_data, to=sid)
+        await self.chat_history_service.emit_assistant_message(
+                    sio=sio,
+                    event=Events.MINDY,
+                    data=response_data,
+                    sid=sid,
+                    tenant_id=tenant_id,
+                    extract_content_from="combined_content"
+                )
 
     
     def _get_initial_sub_settings(self, sub_settings: List[Dict]) -> List[Dict]:
@@ -243,10 +257,11 @@ class SettingsProgressUtility:
 async def start_setting_progress(
     sio, 
     sid: str, 
+    chat_history = None,
     tenant_id: Optional[str] = None,
     session_id: Optional[str] = None
 ) -> None:
-    utility = SettingsProgressUtility()
+    utility = SettingsProgressUtility(chat_history)
     await utility.start_progress_simulation(
         sio=sio,
         sid=sid,
