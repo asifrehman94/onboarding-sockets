@@ -113,6 +113,7 @@ class RoleHandler:
         )
 
         response_data = {
+            "heading": "",
             "text": f"Great — we'll tailor {tenant_id} for your {role.name} workflow.",
             "timestamp": datetime.utcnow().isoformat() + "Z"
         }

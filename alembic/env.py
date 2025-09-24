@@ -40,6 +40,7 @@ from src.infra.database.models.tenant_role import TenantRole
 from src.infra.database.models.tenant_tasks import TenantTasks
 from src.infra.database.models.onboarding_status import OnboardingStatus
 from src.infra.database.models.chat_history import ChatHistory
+from src.infra.database.models.integration_content import IntegrationContent
 
 target_metadata = Base.metadata
 

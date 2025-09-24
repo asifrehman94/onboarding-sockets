@@ -1,0 +1,16 @@
+[  
+  {
+    "integration_type": "default",
+    "status": "pending",
+    "heading": "Connect <integration-type> to power up your AI Teammate",
+    "text": "This is a one-time setup to enable secure, real-time communication from your AI Teammate.\n\nEnter your <integration-type> integration details — we’ll store them securely in your Vault.\n🛡️ Your keys remain encrypted and private.\n\nWhen you’re ready, hit Save to continue.",
+    "default": true
+  },
+  {
+    "integration_type": "default",
+    "status": "completed",
+    "heading": "🎉 Great! Your <integration-type> workspace is now securely connected.",
+    "text": "",
+    "default": true
+  }
+]

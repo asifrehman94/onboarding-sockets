@@ -17,4 +17,5 @@ class Events(StrEnum):
     ROLE = "role"
     ROLE_TASKS = "role-tasks"
     JOURNEY_TRANSITION = "journey-transition"
+    SETTINGS = "settings"
     ERRORS = "errors"

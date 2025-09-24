@@ -6,13 +6,16 @@ python seeds/seed_manager.py seed --all
 ### Seed Specific Data
 ```bash
 # Seed roles only
-python seeds/seed_manager.py seed --roles
+docker-compose exec app  python seeds/seed_manager.py seed --roles
 
 # Seed role tasks only
-python seeds/seed_manager.py seed --role-tasks
+docker-compose exec app  python seeds/seed_manager.py seed --role-tasks
 
 # Seed onboarding content only
-python seeds/seed_manager.py seed --onboarding-content
+docker-compose exec app  python seeds/seed_manager.py seed --onboarding-content
+
+# Seed integration content only
+docker-compose exec app python seeds/seed_manager.py seed --integration-content
 ```
 
 ### Clear Data

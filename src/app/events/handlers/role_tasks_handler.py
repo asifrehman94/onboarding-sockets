@@ -123,6 +123,7 @@ class RoleTasksHandler:
         task_names_text = ", ".join(assigned_task_names) if assigned_task_names else "no tasks"
 
         tasks_response = {
+            "heading": "",
             "text": task_names_text,
             "timestamp": datetime.utcnow().isoformat() + "Z"
         }
@@ -137,6 +138,7 @@ class RoleTasksHandler:
         )
 
         response_data = {
+            "heading": "",
             "text": f"Got it — we'll start automating these right away.",
             "timestamp": datetime.utcnow().isoformat() + "Z"
         }

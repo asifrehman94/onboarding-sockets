@@ -15,15 +15,16 @@ class DatabaseManager:
         self.session_factory = session_factory
     
     async def init_database(self):
-        """Initialize database tables"""
+        """Initialize database connection (tables created via Alembic migrations only)"""
         try:
-            # Import Base from models to avoid circular imports
-            from src.infra.database.models.base import Base
+            # Test database connection without creating tables
+            from sqlalchemy import text
             async with self.engine.begin() as conn:
-                await conn.run_sync(Base.metadata.create_all)
-            logger.info("Database tables initialized successfully")
+                await conn.execute(text("SELECT 1"))
+            logger.info("Database connection initialized successfully")
+            logger.info("Note: Tables should be created using 'alembic upgrade head'")
         except Exception as e:
-            logger.error(f"Failed to initialize database: {e}")
+            logger.error(f"Failed to initialize database connection: {e}")
             raise
     
     async def close_database(self):

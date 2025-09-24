@@ -26,11 +26,13 @@ from src.infra.database.services.session_factory import SessionFactory
 from seeders.role_seeder import RoleSeeder
 from seeders.role_tasks_seeder import RoleTasksSeeder
 from seeders.onboarding_content_seeder import OnboardingContentSeeder
+from seeders.integration_content_seeder import IntegrationContentSeeder
 
 # Import all models to ensure they are registered with SQLAlchemy
 from src.infra.database.models.role import Role
 from src.infra.database.models.role_tasks import RoleTasks
 from src.infra.database.models.onboarding_content import OnboardingContent
+from src.infra.database.models.integration_content import IntegrationContent
 from src.infra.database.models.tenant_role import TenantRole
 from src.infra.database.models.tenant_tasks import TenantTasks
 from src.infra.database.models.onboarding_status import OnboardingStatus
@@ -76,6 +78,7 @@ class SeedManager:
             ("roles", RoleSeeder),
             ("role_tasks", RoleTasksSeeder),
             ("onboarding_content", OnboardingContentSeeder),
+            ("integration_content", IntegrationContentSeeder),
         ]
         
         success = True
@@ -99,6 +102,7 @@ class SeedManager:
             "roles": RoleSeeder,
             "role-tasks": RoleTasksSeeder,
             "onboarding-content": OnboardingContentSeeder,
+            "integration-content": IntegrationContentSeeder,
         }
         
         if seeder_name not in seeder_map:
@@ -121,6 +125,7 @@ class SeedManager:
         
         # Reverse order for clearing (to handle foreign key constraints)
         seeders_order = [
+            ("integration_content", IntegrationContentSeeder),
             ("onboarding_content", OnboardingContentSeeder),
             ("role_tasks", RoleTasksSeeder),
             ("roles", RoleSeeder),
@@ -151,6 +156,7 @@ class SeedManager:
                 from src.infra.database.models.role import Role
                 from src.infra.database.models.role_tasks import RoleTasks
                 from src.infra.database.models.onboarding_content import OnboardingContent
+                from src.infra.database.models.integration_content import IntegrationContent
                 from sqlalchemy import select, func
                 
                 # Count roles
@@ -165,9 +171,14 @@ class SeedManager:
                 result = await session.execute(select(func.count(OnboardingContent.id)))
                 content_count = result.scalar()
                 
+                # Count integration content
+                result = await session.execute(select(func.count(IntegrationContent.id)))
+                integration_count = result.scalar()
+                
                 print(f"  • Roles: {roles_count}")
                 print(f"  • Role Tasks: {role_tasks_count}")
                 print(f"  • Onboarding Content: {content_count}")
+                print(f"  • Integration Content: {integration_count}")
                 
         except Exception as e:
             logger.error(f"Failed to get status: {e}")
@@ -201,6 +212,7 @@ async def main():
     seed_group.add_argument("--roles", action="store_true", help="Seed roles only")
     seed_group.add_argument("--role-tasks", action="store_true", help="Seed role tasks only")
     seed_group.add_argument("--onboarding-content", action="store_true", help="Seed onboarding content only")
+    seed_group.add_argument("--integration-content", action="store_true", help="Seed integration content only")
     
     # Clear command
     clear_parser = subparsers.add_parser("clear", help="Clear seeded data")
@@ -232,6 +244,8 @@ async def main():
                 success = await seed_manager.seed_specific("role-tasks")
             elif getattr(args, 'onboarding_content', False):
                 success = await seed_manager.seed_specific("onboarding-content")
+            elif getattr(args, 'integration_content', False):
+                success = await seed_manager.seed_specific("integration-content")
             else:
                 success = False
             

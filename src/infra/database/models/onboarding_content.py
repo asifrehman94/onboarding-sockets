@@ -13,7 +13,8 @@ class OnboardingContent(Base):
     stage = Column(String(100), nullable=False, index=True)
     step = Column(String(100), nullable=False, index=True)
     status = Column(String(50), nullable=False, index=True)
-    text = Column(Text, nullable=False)
+    heading = Column(Text, nullable=True)
+    text = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     
@@ -31,6 +32,7 @@ class OnboardingContent(Base):
             'stage': self.stage,
             'step': self.step,
             'status': self.status,
+            'heading': self.heading,
             'text': self.text,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None

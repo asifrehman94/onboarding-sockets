@@ -41,20 +41,32 @@ class OnboardingContentSeeder(BaseSeeder):
                 stage = content_item["stage"]
                 step = content_item["step"]
                 status = content_item["status"]
-                text = content_item["text"]
+                # Handle heading and text - convert empty strings to None for database
+                heading = content_item.get("heading")
+                if heading == "":
+                    heading = None
+                    
+                text = content_item.get("text")
+                if text == "":
+                    text = None
                 
                 content_key = (stage, step, status)
                 
                 if content_key in existing_content_dict:
-                    # Check if text is different
                     existing_record = existing_content_dict[content_key]
-                    if existing_record.text != text:
-                        # Update the text
+                    needs_update = (
+                        existing_record.heading != heading or
+                        existing_record.text != text
+                    )
+                    
+                    if needs_update:
+                        # Update the heading and text
+                        existing_record.heading = heading
                         existing_record.text = text
                         updated_count += 1
-                        logger.info(f"Updated text for {stage}/{step}/{status}")
+                        logger.info(f"Updated content for {stage}/{step}/{status}")
                     else:
-                        # Text is the same, skip
+                        # Content is the same, skip
                         skipped_count += 1
                         logger.debug(f"Content for {stage}/{step}/{status} unchanged, skipping")
                 else:
@@ -63,6 +75,7 @@ class OnboardingContentSeeder(BaseSeeder):
                         stage=stage,
                         step=step,
                         status=status,
+                        heading=heading,
                         text=text
                     )
                     self.session.add(onboarding_content)

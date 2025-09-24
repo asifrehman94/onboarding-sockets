@@ -83,6 +83,7 @@ class TeammateBehaviourHandler:
         )
         
         response_data = {
+            "heading": "",
             "text": "🎉 Your AI teammate behavior was saved successfully.",
             "timestamp": datetime.utcnow().isoformat() + "Z"
         }

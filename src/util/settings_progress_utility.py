@@ -1,7 +1,7 @@
 """
-Mindy Progress Utility Service
+Progress Utility Service
 
-A utility service for emitting staged progress data to the mindy event.
+A utility service for emitting staged progress data.
 This is a mocked service that will be replaced later with actual implementation.
 """
 import asyncio
@@ -9,12 +9,13 @@ import logging
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 import uuid
+from src.domain.constants.events import Events
+from src.infra.services.chat_history_service import ChatHistoryService
 
 logger = logging.getLogger(__name__)
 
 
 class SettingsProgressUtility:
-    """Utility service for emitting setting progress data to mindy event"""
     
     def __init__(self):
         self.progress_stages = self._get_progress_stages()
@@ -25,19 +26,22 @@ class SettingsProgressUtility:
             {
                 "type": "setting-1",
                 "heading": "Setting Up Your Workspace",
-                "completion_result": "Your Security Workspace is ready! Secure, personalized, and ready to support your daily operations.",
+                "completion_mindy_heading": "",
+                "completion_mindy_text": "Your Security Workspace is ready! Secure, personalized, and ready to support your daily operations.",
                 "sub_settings": []
             },
             {
                 "type": "setting-2", 
                 "heading": "Setting Up Your Secure Vault",
-                "completion_result": "Your Security Workspace is ready! Secure, personalized, and ready to support your daily operations. Setting Up Your Secure Vault Your Secure Vault is now being created — a private, encrypted space just for you.\n\nThis is where all your API keys, credentials, and sensitive configurations will be stored. Only you — and no one else — can access it, not even our team..",
+                "completion_mindy_heading": "",
+                "completion_mindy_text": "Your Secure Vault is now being created — a private, encrypted space just for you.\n\nThis is where all your API keys, credentials, and sensitive configurations will be stored. Only you — and no one else — can access it, not even our team..",
                 "sub_settings": []
             },
             {
                 "type": "setting-3",
-                "heading": "Setting Basic Skills for AI Teammate", 
-                "completion_result": "AI Teammate is now equipped with core skills We've configured your AI Teammate with essential skills — ready to assist, learn from your workflows, and execute actions securely within your workspace. These skills will evolve as your usage grows.",
+                "heading": "Setting Basic Skills for AI Teammate",
+                "completion_mindy_heading": "AI Teammate is now equipped with core skills",
+                "completion_mindy_text": "We've configured your AI Teammate with essential skills — ready to assist, learn from your workflows, and execute actions securely within your workspace. These skills will evolve as your usage grows.",
                 "sub_settings": [
                     {"text": "Data Retrieval from Complex Knowledge Graphs", "progress": 20},
                     {"text": "Data Analytics", "progress": 20},
@@ -103,7 +107,6 @@ class SettingsProgressUtility:
             stage_type=stage["type"],
             heading=stage["heading"],
             progress=10,
-            result=None,
             sub_settings=self._get_initial_sub_settings(stage["sub_settings"]),
             tenant_id=tenant_id
         )
@@ -124,7 +127,6 @@ class SettingsProgressUtility:
                 stage_type=stage["type"],
                 heading=stage["heading"],
                 progress=progress,
-                result=None,
                 sub_settings=sub_settings,
                 tenant_id=tenant_id
             )
@@ -137,10 +139,16 @@ class SettingsProgressUtility:
             stage_type=stage["type"],
             heading=stage["heading"],
             progress=100,
-            result=stage["completion_result"],
             sub_settings=self._get_completed_sub_settings(stage["sub_settings"]),
             tenant_id=tenant_id
         )
+        response_data = {
+            "heading": stage["completion_mindy_heading"],
+            "text": stage["completion_mindy_text"],
+            "timestamp": datetime.utcnow().isoformat() + "Z"
+        }
+        await sio.emit(Events.MINDY, response_data, to=sid)
+
     
     def _get_initial_sub_settings(self, sub_settings: List[Dict]) -> List[Dict]:
         """Get initial sub-settings with starting progress"""
@@ -195,18 +203,15 @@ class SettingsProgressUtility:
         stage_type: str,
         heading: str,
         progress: int,
-        result: Optional[str],
         sub_settings: List[Dict],
         tenant_id: Optional[str] = None
     ) -> None:
-        """Emit a progress update to the mindy event"""
         
         progress_data = {
             "id": session_id,
             "type": stage_type,
             "heading": heading,
             "overall-progress": progress,
-            "result": result,
             "sub-settings": sub_settings
         }
         
@@ -216,11 +221,10 @@ class SettingsProgressUtility:
         progress_data["timestamp"] = datetime.utcnow().isoformat() + "Z"
         
         try:
-            await sio.emit("mindy", progress_data, to=sid)
-            logger.debug(f"Emitted mindy progress: {stage_type} at {progress}% for sid={sid}")
+            await sio.emit(Events.SETTINGS, progress_data, to=sid)
             
         except Exception as e:
-            logger.error(f"Failed to emit mindy progress: {e}")
+            logger.error(f"Failed to emit progress: {e}")
             raise
     
     async def _emit_error(self, sio, sid: str, error_message: str) -> None:
@@ -242,15 +246,6 @@ async def start_setting_progress(
     tenant_id: Optional[str] = None,
     session_id: Optional[str] = None
 ) -> None:
-    """
-    Convenience function to start mindy progress simulation
-    
-    Args:
-        sio: SocketIO server instance
-        sid: Socket ID for the client
-        tenant_id: Optional tenant identifier
-        session_id: Optional session identifier
-    """
     utility = SettingsProgressUtility()
     await utility.start_progress_simulation(
         sio=sio,

@@ -47,16 +47,26 @@ class ScreenEventHandler:
             content = await self.onboarding_repository.get_by_stage_step_status(stage, step, status)
             
             if content:
-                text = content.text
+                heading = content.heading or ""
+                text = content.text or ""
 
+                if '<tenant_id>' in heading:
+                    heading = heading.replace('<tenant_id>', tenant_id)
                 if '<tenant_id>' in text:
                     text = text.replace('<tenant_id>', tenant_id)
+                if '<username>' in heading:
+                    username = data.get('username', '')
+                    heading = heading.replace('<username>', username)
                 if '<username>' in text:
                     username = data.get('username', '')
                     text = text.replace('<username>', username)
                 
+                combined_content = f"{heading}\n{text}" if heading and text else (heading or text or "")
+                
                 response_data = {
+                    "heading": heading,
                     "text": text,
+                    "combined_content": combined_content,
                     "timestamp": datetime.utcnow().isoformat() + "Z"
                 }
 
@@ -66,7 +76,7 @@ class ScreenEventHandler:
                     data=response_data,
                     sid=sid,
                     tenant_id=tenant_id,
-                    extract_content_from="text"
+                    extract_content_from="combined_content"
                 )
                 
                 if stage == Stage.ONBOARDING and step == Steps.WELCOME and status == Status.COMPLETED:

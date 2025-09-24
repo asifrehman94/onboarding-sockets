@@ -11,6 +11,9 @@ services:
 
   integration_handler:
     class: src.app.events.handlers.integration_handler.IntegrationHandler
+    kwargs:
+      integration_content_repository: '@integration_content_repository'
+      chat_history_service: '@chat_history_service'
 
   knowledge_repository_handler:
     class: src.app.events.handlers.knowledge_repository_handler.KnowledgeRepositoryHandler
