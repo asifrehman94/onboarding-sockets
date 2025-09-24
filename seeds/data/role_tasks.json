@@ -21,21 +21,12 @@
       "Alert Overload & Noise",
       "New Asset/Event Tracking",
       "Slow Incident Detection",
-      "Inefficient Incident Triage",
-      "Delayed Manual Responses",
-      "Lack of Standardized Workflows",
-      "Fragmented Security View",
-      "Complex Cloud Attack Surface",
-      "Threat Intelligence Integration"
+      "Inefficient Incident Triage"
     ]
   },
   {
     "role_name": "SOC-L3 Analyst",
     "tasks": [
-      "Manual Data Consolidation",
-      "Alert Overload & Noise",
-      "New Asset/Event Tracking",
-      "Slow Incident Detection",
       "Inefficient Incident Triage",
       "Delayed Manual Responses",
       "Lack of Standardized Workflows",
@@ -47,28 +38,15 @@
   {
     "role_name": "SOC Manager",
     "tasks": [
-      "Manual Data Consolidation",
-      "Alert Overload & Noise",
       "New Asset/Event Tracking",
       "Slow Incident Detection",
       "Inefficient Incident Triage",
-      "Delayed Manual Responses",
-      "Lack of Standardized Workflows",
-      "Fragmented Security View",
-      "Complex Cloud Attack Surface",
-      "Threat Intelligence Integration"
+      "Delayed Manual Responses"
     ]
   },
   {
     "role_name": "CISO",
     "tasks": [
-      "Manual Data Consolidation",
-      "Alert Overload & Noise",
-      "New Asset/Event Tracking",
-      "Slow Incident Detection",
-      "Inefficient Incident Triage",
-      "Delayed Manual Responses",
-      "Lack of Standardized Workflows",
       "Fragmented Security View",
       "Complex Cloud Attack Surface",
       "Threat Intelligence Integration"
@@ -77,16 +55,11 @@
   {
     "role_name": "GRC Executive",
     "tasks": [
-      "Manual Data Consolidation",
       "Alert Overload & Noise",
       "New Asset/Event Tracking",
       "Slow Incident Detection",
-      "Inefficient Incident Triage",
-      "Delayed Manual Responses",
       "Lack of Standardized Workflows",
-      "Fragmented Security View",
-      "Complex Cloud Attack Surface",
-      "Threat Intelligence Integration"
+      "Fragmented Security View"
     ]
   }
 ]

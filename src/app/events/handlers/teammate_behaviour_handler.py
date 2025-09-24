@@ -112,14 +112,13 @@ class TeammateBehaviourHandler:
             }
             for behaviour in behaviours
         ]
-
-        await self.sio.emit(Events.TEAMMATE_BEHAVIOUR, behaviour_data, to=sid)
         
-        return {"success": True}
+        return {"success": True, "data": behaviour_data}
     
     async def _handle_delete_behaviour(self, sid: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """Handle DELETE request - delete a specific behaviour"""
 
+        tenant_id = data.get('tenant_id')
         payload = data.get('payload', {})
         behaviour_id = payload.get('id')
         
@@ -131,10 +130,20 @@ class TeammateBehaviourHandler:
         except ValueError:
             return {"success": False, "error": "Invalid behaviour ID format"}
         
-        deleted = await self.teammate_behaviour_repository.delete_by_id(behaviour_uuid)
+        deleted = await self.teammate_behaviour_repository.delete_by_id(behaviour_uuid)        
         
-        if deleted:                    
-            return {"success": True}
+        if deleted:
+
+            behaviours = await self.teammate_behaviour_repository.get_by_tenant(tenant_id)        
+            behaviour_data = [
+                {
+                    "id": str(behaviour.id),
+                    "behaviour": behaviour.prompt
+                }
+                for behaviour in behaviours
+            ]
+
+            return {"success": True, "data": behaviour_data}
         else:
             return {"success": False, "error": "Behaviour not found"}
 
