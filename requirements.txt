@@ -4,7 +4,7 @@ uvicorn[standard]==0.32.0
 gunicorn==21.2.0
 python-multipart==0.0.6
 
-# Socket.IO dependencies (wrapper is imported directly)
+# Socket.IO dependencies
 python-socketio>=5.8.0
 gunicorn>=21.0.0
 

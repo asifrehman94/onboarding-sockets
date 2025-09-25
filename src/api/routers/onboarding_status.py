@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query, Depends, HTTPException, Body
+from fastapi import APIRouter, Query, Depends, HTTPException, Body, Response
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
@@ -12,6 +12,7 @@ from src.infra.database.repositories.onboarding_status_repository import Onboard
 from src.infra.database.repositories.chat_history_repository import ChatHistoryRepository
 from src.infra.database.repositories.tenant_role_repository import TenantRoleRepository
 from src.infra.database.repositories.tenant_tasks_repository import TenantTasksRepository
+import uuid
 
 router = APIRouter(tags=["onboarding-status"])
 
@@ -34,6 +35,7 @@ class OnboardingStatusUpdate(BaseModel):
 
 @router.get("/status")
 async def get_onboarding_status(
+    response: Response,
     tenant_id: str = Query(..., description="Tenant ID (required)"),
     onboarding_repo: OnboardingStatusRepository = Depends(get_onboarding_status_repository),
     chat_repo: ChatHistoryRepository = Depends(get_chat_history_repository),
@@ -42,6 +44,8 @@ async def get_onboarding_status(
 ):
     """Get comprehensive onboarding status for a tenant"""
     try:
+        # onboarding_session_id = str(uuid.uuid4())
+        # response.set_cookie(key="onboarding_session_id", value=onboarding_session_id, max_age=3600, httponly=True, secure=False, samesite="lax")
 
         response = {
             "tenant_id": tenant_id,

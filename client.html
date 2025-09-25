@@ -145,7 +145,10 @@
             socket = io(url, {
                 transports: ['websocket'],
                 upgrade: false,
-                rememberUpgrade: false
+                rememberUpgrade: false,
+                auth: {
+                    onboarding_session_id: "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI2dHRaSW45WVFQSk5MMExvOGFGdDF3LUZYVnZrSEZsZTNfNUhydy1jcVZnIn0.eyJleHAiOjE3NTg3ODg4OTIsImlhdCI6MTc1ODc4ODU5MiwianRpIjoidHJydGNjOmRkYjk1MGZmLTc1YzYtMzU4MS0yM2U1LWYzMGU3ZTVlYjA5YSIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9yZWFsbXMvbXlyZWFsbSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiJjMTcyNWZiNC0zNDA4LTQ3ZGEtYmFmMC1iNDY1ZDY2NGE0NzkiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJ0ZXN0LWNsaWVudCIsImFjciI6IjEiLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsiZGVmYXVsdC1yb2xlcy1teXJlYWxtIiwib2ZmbGluZV9hY2Nlc3MiLCJ1bWFfYXV0aG9yaXphdGlvbiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoiZW1haWwgcHJvZmlsZSIsImNsaWVudEhvc3QiOiIxNzIuMTguMC4xIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzZXJ2aWNlLWFjY291bnQtdGVzdC1jbGllbnQiLCJjbGllbnRBZGRyZXNzIjoiMTcyLjE4LjAuMSIsImNsaWVudF9pZCI6InRlc3QtY2xpZW50In0.XA5qPQkdOJvLHv7oLbjc5qoNTGmBGXdV5kZ4jUfVGRBi5n0_ANo0Onr_MCCVX4xhmM-rYCfW57H-bv9Qs72L6wnzdlCQTEqKtX_EtTOIo4WCz9y9AT113j2kvxSE1oU-AFgKIqWOiy8Q2iAfluDtylqg6VmXcFxBDqLEwbw0bYgUmnl7IKzQiy1wHAU9WjiBaCR7kSxoOFvQj_MwlJlW-Q3puXwITXWrzkJKO4W8kLoWfa9MnAziA1tJeZ6UOWCyEaH3WJUyGEYucy1NJPcuIlrMLYfeMFDWa9qj-DmwKpvKsx1h7o4Ccq1fxc2PzmOPLcMQpBkcEKEkfq0nAPKdjw"
+                }
             });
 
             // Connection event
@@ -211,7 +214,7 @@
             const screenEventData = {
                 tenant_id: "ABCDE",
                 stage: "onboarding",
-                step: "settings", 
+                step: "welcome", 
                 status: "completed",
             };
             socket.emit('screen', screenEventData);

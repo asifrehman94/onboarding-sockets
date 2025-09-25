@@ -19,12 +19,13 @@ class Authenticator:
         try:
             payload = jwt.decode(token, key="", options={"verify_signature": False, "verify_aud": False})
             iss = payload.get("iss", "")
-            match = re.search(r"^https:\/\/[^\/]+\/realms\/([^\/]+)", iss)
+            match = re.search(r"^http:\/\/[^\/]+\/realms\/([^\/]+)", iss)
             return match.group(1) if match else None
         except Exception as e:
             return None
     
     async def fetch_client_secret(self, tenant_id: str) -> str:
+        return "K2QCge5EG9uDfogFfRhxgQrrXthj8JyN" #will be replaced.
         url = self.client_secret_url + f"?clientId={self.client_id}&organization={tenant_id}"
         async with aiohttp.ClientSession() as session:
             async with session.get(url, headers={"accept": "*/*"}) as response:
@@ -53,26 +54,22 @@ class Authenticator:
     
     async def validate_token(self, token: str):
 
-        print("===============client_secret_url",self.client_secret_url)
-        print("===============client_id",self.client_id)
-        print("===============introspect_url",self.introspect_url)
-        return None
-        # if not token:
-        #     raise Exception("Missing token")
+        if not token:
+            raise Exception("Missing token")
 
-        # tenant_id = self.extract_client_id_from_jwt(token)
+        tenant_id = self.extract_tenant_id(token)
+
+        if not tenant_id:
+            raise Exception("Invalid token issuer")
+
+        client_secret = await self.fetch_client_secret(tenant_id)
+
+        if not client_secret:
+            raise Exception("Failed to fetch client secret")
+
+        is_valid = await self.introspect_token(token, tenant_id, client_secret)
+
+        if not is_valid:
+            raise Exception("Token is either invalid or expired")
         
-        # if not tenant_id:
-        #     raise Exception("Invalid token issuer")
-
-        # client_secret = await self.fetch_client_secret(tenant_id)
-        
-        # if not client_secret:
-        #     raise Exception("Failed to fetch client secret")
-
-        # is_valid = await self.introspect_token(token, tenant_id, client_secret)
-
-        # if not is_valid:
-        #     raise Exception("Token is either invalid or expired")
-
-        # return {"tenant_id": tenant_id, "valid": True}
+        return True

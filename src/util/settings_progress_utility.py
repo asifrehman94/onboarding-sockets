@@ -226,7 +226,8 @@ class SettingsProgressUtility:
             "type": stage_type,
             "heading": heading,
             "overall-progress": progress,
-            "sub-settings": sub_settings
+            "sub-settings": sub_settings,
+            "is_settings": True
         }
         
         if tenant_id:
@@ -235,7 +236,7 @@ class SettingsProgressUtility:
         progress_data["timestamp"] = datetime.utcnow().isoformat() + "Z"
         
         try:
-            await sio.emit(Events.SETTINGS, progress_data, to=sid)
+            await sio.emit(Events.MINDY, progress_data, to=sid)
             
         except Exception as e:
             logger.error(f"Failed to emit progress: {e}")
