@@ -22,6 +22,14 @@ class SettingsProgressUtility:
         self.chat_history_service = chat_history_service
         self.progress_stages = self._get_progress_stages()
     
+    def _replace_tenant_placeholder(self, text: str, tenant_id: Optional[str] = None) -> str:
+        """Replace <tenant_id> placeholder with actual tenant_id or default value"""
+        if not text:
+            return text
+        
+        replacement = tenant_id if tenant_id else "Secure.com"
+        return text.replace("<tenant_id>", replacement)
+    
     def _get_progress_stages(self) -> List[Dict[str, Any]]:
         """Define the three progress stages with their configurations"""
         return [
@@ -44,6 +52,7 @@ class SettingsProgressUtility:
                 "heading": "Setting Basic Skills for AI Teammate",
                 "completion_mindy_heading": "AI Teammate is now equipped with core skills",
                 "completion_mindy_text": "We've configured your AI Teammate with essential skills — ready to assist, learn from your workflows, and execute actions securely within your workspace. These skills will evolve as your usage grows.",
+                "note": "You can modify these skills later from AI Teammate configuration from <tenant_id>'s platform.",
                 "sub_settings": [
                     {"text": "Data Retrieval from Complex Knowledge Graphs", "progress": 20},
                     {"text": "Data Analytics", "progress": 20},
@@ -102,6 +111,9 @@ class SettingsProgressUtility:
     ) -> None:
         """Simulate progress for a single stage"""
         
+        # Get note if it exists in the stage
+        note = stage.get("note")
+        
         await self._emit_progress_update(
             sio=sio,
             sid=sid,
@@ -110,7 +122,8 @@ class SettingsProgressUtility:
             heading=stage["heading"],
             progress=10,
             sub_settings=self._get_initial_sub_settings(stage["sub_settings"]),
-            tenant_id=tenant_id
+            tenant_id=tenant_id,
+            note=note
         )
         
         progress_steps = [25, 50, 75, 90]
@@ -130,7 +143,8 @@ class SettingsProgressUtility:
                 heading=stage["heading"],
                 progress=progress,
                 sub_settings=sub_settings,
-                tenant_id=tenant_id
+                tenant_id=tenant_id,
+                note=note
             )
         
         await asyncio.sleep(1)
@@ -142,7 +156,8 @@ class SettingsProgressUtility:
             heading=stage["heading"],
             progress=100,
             sub_settings=self._get_completed_sub_settings(stage["sub_settings"]),
-            tenant_id=tenant_id
+            tenant_id=tenant_id,
+            note=note
         )
         await asyncio.sleep(1)
         heading = stage["completion_mindy_heading"]
@@ -218,7 +233,8 @@ class SettingsProgressUtility:
         heading: str,
         progress: int,
         sub_settings: List[Dict],
-        tenant_id: Optional[str] = None
+        tenant_id: Optional[str] = None,
+        note: Optional[str] = None
     ) -> None:
         
         progress_data = {
@@ -229,6 +245,10 @@ class SettingsProgressUtility:
             "sub-settings": sub_settings,
             "is_settings": True
         }
+        
+        # Add note if provided, with tenant_id replacement
+        if note:
+            progress_data["note"] = self._replace_tenant_placeholder(note, tenant_id)
         
         if tenant_id:
             progress_data["tenant_id"] = tenant_id
