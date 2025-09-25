@@ -1,0 +1,12 @@
+services:
+  server_config:
+    class: src.infra.server.server_config.ServerConfig
+    kwargs:
+      app_name: '@APP_NAME'
+      app_version: '@APP_VERSION'
+      environment: '@ENVIRONMENT'
+      debug: '@DEBUG'
+      host: '@HOST'
+      port: '@PORT'
+      workers: '@WORKERS'
+      log_level: '@LOG_LEVEL'

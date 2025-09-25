@@ -1,0 +1,11 @@
+services:
+  socketio_server:
+    class: src.infra.socketio.services.socketio_server_manager.SocketIOServerManager
+    kwargs:
+      event_registry: '@event_registry'
+      host: '@HOST'
+      port: '@PORT'
+      workers: '@WORKERS'
+      redis_url: '@REDIS_URL'
+      socketio_logger: '@SOCKETIO_LOGGER'
+      socketio_engineio_logger: '@SOCKETIO_ENGINEIO_LOGGER'

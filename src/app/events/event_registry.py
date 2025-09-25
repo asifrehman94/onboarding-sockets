@@ -1,0 +1,71 @@
+"""
+Event Registry with IoC Dependencies
+
+Clean, modular Socket.IO event handling with dependency injection.
+"""
+import logging
+from py_socketio import SocketIOListener
+from src.domain.constants.events import Events
+from src.app.events.handlers.connection_handler import ConnectionHandler
+from src.app.events.handlers.screen_event_handler import ScreenEventHandler
+from src.app.events.handlers.integration_handler import IntegrationHandler
+from src.app.events.handlers.knowledge_repository_handler import KnowledgeRepositoryHandler
+from src.app.events.handlers.teammate_behaviour_handler import TeammateBehaviourHandler
+from src.app.events.handlers.role_handler import RoleHandler
+from src.app.events.handlers.role_tasks_handler import RoleTasksHandler
+from src.app.events.handlers.journey_transition_handler import JourneyTransitionHandler
+
+logger = logging.getLogger(__name__)
+
+
+class EventRegistry(SocketIOListener):
+    """Event registry with IoC-injected handler dependencies"""
+    
+    def __init__(
+        self,
+        connection_handler: ConnectionHandler,
+        screen_event_handler: ScreenEventHandler,
+        integration_handler: IntegrationHandler,
+        knowledge_repository_handler: KnowledgeRepositoryHandler,
+        teammate_behaviour_handler: TeammateBehaviourHandler,
+        role_handler: RoleHandler,
+        role_tasks_handler: RoleTasksHandler,
+        journey_transition_handler: JourneyTransitionHandler
+    ):
+        self.connection_handler = connection_handler
+        self.screen_event_handler = screen_event_handler
+        self.integration_handler = integration_handler
+        self.knowledge_repository_handler = knowledge_repository_handler
+        self.teammate_behaviour_handler = teammate_behaviour_handler
+        self.role_handler = role_handler
+        self.role_tasks_handler = role_tasks_handler
+        self.journey_transition_handler = journey_transition_handler
+    
+    def register_events(self, sio):
+        """Register all events with their handler functions using Events enum"""
+        
+        # Inject sio into all handlers so they don't need it as a parameter
+        self._inject_sio_into_handlers(sio)
+        
+        # Connection events
+        sio.on(Events.CONNECT, self.connection_handler.handle_connect)
+        sio.on(Events.DISCONNECT, self.connection_handler.handle_disconnect)
+        
+        # Register event handlers directly using enum values
+        sio.on(Events.SCREEN_EVENT, self.screen_event_handler.handle_screen_event)
+        sio.on(Events.INTEGRATION, self.integration_handler.handle_integration)
+        sio.on(Events.KNOWLEDGE_REPOSITORY, self.knowledge_repository_handler.handle_knowledge_repository)
+        sio.on(Events.TEAMMATE_BEHAVIOUR, self.teammate_behaviour_handler.handle_teammate_behaviour)
+        sio.on(Events.ROLE, self.role_handler.handle_role)
+        sio.on(Events.ROLE_TASKS, self.role_tasks_handler.handle_role_tasks)
+        sio.on(Events.JOURNEY_TRANSITION, self.journey_transition_handler.handle_journey_transition)
+    
+    def _inject_sio_into_handlers(self, sio):
+        """Inject sio instance into all handlers"""
+        self.screen_event_handler.sio = sio
+        self.integration_handler.sio = sio
+        self.knowledge_repository_handler.sio = sio
+        self.teammate_behaviour_handler.sio = sio
+        self.role_handler.sio = sio
+        self.role_tasks_handler.sio = sio
+        self.journey_transition_handler.sio = sio

@@ -92,6 +92,7 @@
             <button class="event-btn" onclick="sendTeammateBehaviourEvent()" disabled>Teammate Behaviour</button>
             <button class="event-btn" onclick="sendRoleEvent()" disabled>Role</button>
             <button class="event-btn" onclick="sendRoleTasksEvent()" disabled>Role Tasks</button>
+            <button class="event-btn" onclick="sendJourneyEvent()" disabled>Journey</button>
         </div>
         
         <h3>Event Log:</h3>
@@ -139,10 +140,15 @@
 
             // Connect to Socket.IO server with custom path
             // Allow both transports, will upgrade to WebSocket
-            socket = io('http://localhost:8000', {
+            // url = "http://localhost:8000/"
+            url = "https://marya-chemoreceptive-susan.ngrok-free.app"
+            socket = io(url, {
                 transports: ['websocket'],
                 upgrade: false,
-                rememberUpgrade: false
+                rememberUpgrade: false,
+                auth: {
+                    onboarding_session_id: "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI2dHRaSW45WVFQSk5MMExvOGFGdDF3LUZYVnZrSEZsZTNfNUhydy1jcVZnIn0.eyJleHAiOjE3NTg3ODg4OTIsImlhdCI6MTc1ODc4ODU5MiwianRpIjoidHJydGNjOmRkYjk1MGZmLTc1YzYtMzU4MS0yM2U1LWYzMGU3ZTVlYjA5YSIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9yZWFsbXMvbXlyZWFsbSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiJjMTcyNWZiNC0zNDA4LTQ3ZGEtYmFmMC1iNDY1ZDY2NGE0NzkiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJ0ZXN0LWNsaWVudCIsImFjciI6IjEiLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsiZGVmYXVsdC1yb2xlcy1teXJlYWxtIiwib2ZmbGluZV9hY2Nlc3MiLCJ1bWFfYXV0aG9yaXphdGlvbiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoiZW1haWwgcHJvZmlsZSIsImNsaWVudEhvc3QiOiIxNzIuMTguMC4xIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzZXJ2aWNlLWFjY291bnQtdGVzdC1jbGllbnQiLCJjbGllbnRBZGRyZXNzIjoiMTcyLjE4LjAuMSIsImNsaWVudF9pZCI6InRlc3QtY2xpZW50In0.XA5qPQkdOJvLHv7oLbjc5qoNTGmBGXdV5kZ4jUfVGRBi5n0_ANo0Onr_MCCVX4xhmM-rYCfW57H-bv9Qs72L6wnzdlCQTEqKtX_EtTOIo4WCz9y9AT113j2kvxSE1oU-AFgKIqWOiy8Q2iAfluDtylqg6VmXcFxBDqLEwbw0bYgUmnl7IKzQiy1wHAU9WjiBaCR7kSxoOFvQj_MwlJlW-Q3puXwITXWrzkJKO4W8kLoWfa9MnAziA1tJeZ6UOWCyEaH3WJUyGEYucy1NJPcuIlrMLYfeMFDWa9qj-DmwKpvKsx1h7o4Ccq1fxc2PzmOPLcMQpBkcEKEkfq0nAPKdjw"
+                }
             });
 
             // Connection event
@@ -207,12 +213,27 @@
 
             const screenEventData = {
                 tenant_id: "ABCDE",
-                stage: "powering-up-ai",
-                step: "knowledge-repository", 
+                stage: "onboarding",
+                step: "welcome", 
                 status: "completed",
-                message: "Hello from client!"
             };
-            socket.emit('screen_event', screenEventData);
+            socket.emit('screen', screenEventData);
+
+            // const screenEventData1 = {
+            //     tenant_id: "ABCDE",
+            //     stage: "onboarding",
+            //     step: "settings", 
+            //     status: "completed",
+            // };
+            // socket.emit('screen', screenEventData1);
+
+            // const screenEventData2 = {
+            //     tenant_id: "ABCDE",
+            //     stage: "powering-up-ai",
+            //     step: "communication-workspace", 
+            //     status: "initial",
+            // };
+            // socket.emit('screen', screenEventData2);
         }
 
         function sendIntegrationEvent() {
@@ -224,8 +245,7 @@
             const integrationData = {
                 tenant_id: "ABCDE",
                 integration_type: "slack",
-                status: "configuring",
-                message: "Setting up Slack integration"
+                status: "pending"
             };
 
             log(`📤 Sending INTEGRATION: ${JSON.stringify(integrationData)}`, 'sent');
@@ -246,7 +266,7 @@
             };
 
             log(`📤 Sending KNOWLEDGE_REPOSITORY: ${JSON.stringify(knowledgeData)}`, 'sent');
-            socket.emit('knowledge_repository', knowledgeData);
+            socket.emit('knowledge-repository', knowledgeData);
         }
 
         function sendTeammateBehaviourEvent() {
@@ -255,16 +275,31 @@
                 return;
             }
 
+            // const behaviourData = {
+            //     tenant_id: "ABCDE",
+            //     method : "POST",
+            //     payload: {
+            //         message : "Be GOOD!!"
+            //     }
+            // };
             const behaviourData = {
                 tenant_id: "ABCDE",
-                behaviour_type: "communication_style",
-                preference: "direct",
-                status: "updated",
-                message: "Updated communication preferences"
+                method : "GET",
+                payload: null
             };
+            // const behaviourData = {
+            //     tenant_id: "ABCDE",
+            //     method : "DELETE",
+            //     payload: {
+            //         id : "67f2c920-d6b6-4a13-ad29-9a503fada413"
+            //     }
+            // };
 
             log(`📤 Sending TEAMMATE_BEHAVIOUR: ${JSON.stringify(behaviourData)}`, 'sent');
-            socket.emit('teammate_behaviour', behaviourData);
+            socket.emit('teammate-behaviour', behaviourData , (response) => {
+                    
+                    console.log('Server response:', response);
+                    });
         }
 
         function sendRoleEvent() {
@@ -274,15 +309,23 @@
             }
 
             const roleData = {
-                tenant_id: "ABCDE",
-                role: "senior_developer",
-                department: "engineering",
-                status: "assigned",
-                message: "Role assignment completed"
+                tenant_id: "ASIFCORP",
+                method : "GET",
+                payload: null
             };
 
-            log(`📤 Sending ROLE: ${JSON.stringify(roleData)}`, 'sent');
-            socket.emit('role', roleData);
+            // const roleData = {
+            //     tenant_id: "ABCDE",
+            //     method : "POST",
+            //     payload: {
+            //         role_id : "b599d526-cdf1-42ea-9db2-ab9ae4369f4e"
+            //     }
+            // };
+
+            socket.emit('role', roleData, (response) => {
+                    
+                    console.log('Server response:', response);
+                    });
         }
 
         function sendRoleTasksEvent() {
@@ -293,14 +336,50 @@
 
             const roleTasksData = {
                 tenant_id: "ABCDE",
-                role: "senior_developer",
-                tasks: ["code_review", "mentoring", "architecture_design"],
-                status: "configured",
-                message: "Role tasks configured"
+                method : "GET",
+                role_id : "807016dd-e2e5-4006-abd7-64ea0a8dfce8",
+                payload: null
             };
 
+            //  const roleTasksData = {
+            //     tenant_id: "ABCDE",
+            //     method : "POST",
+            //     payload: [
+            //         {
+            //         task_id : "2fcc1db9-f7b8-4855-bb1a-4b04f685b19e"
+            //         },
+            //         {
+            //         task_id : "dc959cab-6eec-4653-9987-0192a7cf0845"
+            //         },
+            //         {
+            //         task_id : "8d058d1e-4863-4221-a672-5a700f16c948"
+            //         }
+            // ]
+            // };
+
             log(`📤 Sending ROLE_TASKS: ${JSON.stringify(roleTasksData)}`, 'sent');
-            socket.emit('role_tasks', roleTasksData);
+            socket.emit('role-tasks', roleTasksData, (response) => {
+                    
+                    console.log('Server response:', response);
+                    });
+        }
+
+        function sendJourneyEvent() {
+            if (!socket || !isConnected) {
+                log('❌ Not connected to server', 'error');
+                return;
+            }
+
+            const journeyData = {
+                tenant_id: "ABCDE",
+                stage: "onboarding",
+                step: "welcome",
+                status: 0
+            };
+
+            log(`📤 Sending ROLE_TASKS: ${JSON.stringify(journeyData)}`, 'sent');
+
+            socket.emit('journey-transition', journeyData);
         }
 
         function clearLog() {

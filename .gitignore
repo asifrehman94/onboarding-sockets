@@ -8,8 +8,6 @@ __pycache__/
 
 **/test_data/
 
-nifi/data/
-
 venv/
 
 .ipynb_checkpoints
